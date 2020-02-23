@@ -1,5 +1,5 @@
 # ignore data files
-/ASSR_shinyApp/data
+ASSR_shinyApp/data/
 
 # History files
 .Rhistory
