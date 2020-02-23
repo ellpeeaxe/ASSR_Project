@@ -1,3 +1,6 @@
+# ignore data files
+/ASSR_shinyApp/data
+
 # History files
 .Rhistory
 .Rapp.history
