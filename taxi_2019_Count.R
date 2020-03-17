@@ -93,3 +93,14 @@ TukeyHSD(res.aov)
 
 
 write.csv(taxi_speed,"taxi_speed with Groups.csv")
+
+
+taxi_speed %<>% mutate(Group=recode(Group,
+                                    '1' = '1',
+                                    '2' = '2',
+                                    '3' = '3',
+                                    '4' = '3',
+                                    '5' = '5'))
+
+write.csv(taxi_speed,"C:/Users/Seant/Desktop/taxi_speed with Groups.csv")
+
