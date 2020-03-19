@@ -10,8 +10,33 @@ library(shiny.semantic)
 library(semantic.dashboard)
 library(ggplot2)
 library(ggridges)
+library(dplyr)
+library(magrittr)
+library(plotly)
+library(feather)
 
-fare_data <- read.csv("data/fares.csv")
+
+
+taxi <-  read_feather("C:/Users/Seant/Desktop/taxi")
+taxi_summary <-  read_feather("C:/Users/Seant/Desktop/taxi_summary")
+
+dayHour <-  taxi %>%  group_by(start_wday,start_hour) %>% dplyr::summarise(N=n())
+dayHour$start_wday <-  factor(dayHour$start_wday, levels = rev(levels(dayHour$start_wday)))
+
+dayMonth <-  taxi %>%  group_by(start_wday,start_month) %>% dplyr::summarise(N=n())
+dayMonth$start_month <-  factor(dayMonth$start_month, levels = rev(levels(dayMonth$start_month)))
+
+HourMonth <-  taxi %>%  group_by(start_hour,start_month) %>% dplyr::summarise(N=n())
+HourMonth$start_month <-  factor(HourMonth$start_month, levels = rev(levels(HourMonth$start_month)))
+
+
+Trips_Count <- length(taxi$taxi_id)
+Taxi_Count <- n_distinct(taxi$taxi_id)
+Total_Distance <-  sum(taxi$trip_miles)
+
+
+
+#fare_data <- read.csv("data/fares.csv")
 ###########################################################################################
 #                                                                                         #
 #                                       SERVER CODES                                      #
@@ -21,17 +46,71 @@ fare_data <- read.csv("data/fares.csv")
 server <- function(input, output, session) {
   
   # Ridge Plot
-  companyridge_data <- reactive({
-    companyridge_data <- fare_data %>% 
-      filter(company %in% c(input$companyA,input$companyB)) %>%
-      select(fare,company) 
+#  companyridge_data <- reactive({
+#    companyridge_data <- fare_data %>% 
+#      filter(company %in% c(input$companyA,input$companyB)) %>%
+#      select(fare,company) 
+#  })
+  
+#  output$fare_ridgeplot <- renderPlot({
+#    ggplot(companyridge_data(), aes(y=1,x=fare,fill=company)) +
+#      geom_density_ridges(alpha=0.5) +
+#      xlim(0,100) +
+#      theme(axis.text=element_text(size=10,), axis.title.y = element_blank(), legend.position = "bottom") 
+#  })
+  
+  
+ ### For Travel Patterns
+  output$distPlot <- renderPlot({
+    ggplot(taxi_summary, aes(x=Time,y=Count,colour=Group))+geom_point() + 
+      ggtitle("2019 Traffic Count") +
+      theme(plot.title = element_text(face = "bold", size = (15)),axis.text.x=element_text(angle = 45,hjust =1))+
+      scale_x_datetime(date_breaks = '1 hour',
+                       date_labels ='%H:%M')
   })
   
-  output$fare_ridgeplot <- renderPlot({
-    ggplot(companyridge_data(), aes(y=1,x=fare,fill=company)) +
-      geom_density_ridges(alpha=0.5) +
-      xlim(0,100) +
-      theme(axis.text=element_text(size=10,), axis.title.y = element_blank(), legend.position = "bottom") 
+  
+  output$dayHour <- renderPlot({ggplot(dayHour, aes(start_hour,start_wday))+geom_tile(aes(fill=N),color="white",na.rm=TRUE)+
+      scale_fill_gradient(low = "#d8e1cf", high = "#0E3386")+
+      guides(fill=guide_legend(title="Total Trips"))+
+      theme_bw()+theme_minimal()+
+      labs(title="Taxi Trips Start by Day of Week and Hour", x= "Trips per Hour", y= "Day of Week")
   })
+  
+  output$dayMonth <-  renderPlot({ggplot(dayMonth, aes(start_wday,start_month))+geom_tile(aes(fill=N),color="white",na.rm=TRUE)+
+      scale_fill_gradient(low = "#d8e1cf", high = "#FF0000")+
+      guides(fill=guide_legend(title="Total Trips"))+
+      theme_bw()+theme_minimal()+
+      labs(title="Taxi Trips Start by Day of Month and Weekday", x= "Day of Week", y= "Month")
+  })
+  
+  
+  output$TripsCount <-  renderValueBox(
+    valueBox(
+      subtitle= 'No. of Trips',
+      value= formatC(Trips_Count, format = "d", big.mark = ","),
+      icon=icon("stats",lib='glyphicon'),
+      color="purple"
+    )
+  )
+  
+  output$TotalDistance <-  renderValueBox(
+    valueBox(
+      subtitle = 'Distance Travelled',
+      value=formatC(Total_Distance, format = "d", big.mark = ","),
+      icon=icon("stats",lib='glyphicon'),
+      color="green"
+    )
+  )
+  
+  output$TaxiCount <-  renderValueBox(
+    valueBox(
+      subtitle = 'No. of Taxis',
+      value=formatC(Taxi_Count, format = "d", big.mark = ","),
+      icon=icon("stats",lib='glyphicon'),
+      color="blue"
+    )
+  )
+  
 
 }
