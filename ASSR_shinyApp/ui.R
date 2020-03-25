@@ -39,10 +39,15 @@ ui <- dashboardPage(
             title = "Travel Patterns",
             color = "black", ribbon = FALSE, title_side = "top", collapsible = FALSE,
             
-            fluidRow(
-              valueBoxOutput("TripsCount"),
-              valueBoxOutput("TotalDistance"),
-              valueBoxOutput("TaxiCount"),
+              fluidRow(
+                
+              selectInput('choice1', 'Time Type', 
+                            choices =  c(`Year` = 'start_year',`Month` = 'start_month', `Day` = 'start_day'),
+                            multiple = FALSE),
+                
+              column(width= 4,valueBoxOutput("TripsCount")),
+              column(width = 4,valueBoxOutput("TotalDistance")),
+              column(width = 4,valueBoxOutput("TaxiCount")),
               ),
             
             fluidRow(
@@ -50,8 +55,8 @@ ui <- dashboardPage(
               ),
             
             fluidRow(
-              plotOutput("dayHour",height ="300px"),
-              plotOutput("dayMonth",height ="300px"),
+              column(width= 8,plotOutput("dayHour",height ="300px")),
+              column(width= 8,plotOutput("dayMonth",height ="300px")),
              )
           )
         )

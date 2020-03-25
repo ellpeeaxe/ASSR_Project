@@ -30,10 +30,6 @@ HourMonth <-  taxi %>%  group_by(start_hour,start_month) %>% dplyr::summarise(N=
 HourMonth$start_month <-  factor(HourMonth$start_month, levels = rev(levels(HourMonth$start_month)))
 
 
-Trips_Count <- length(taxi$taxi_id)
-Taxi_Count <- n_distinct(taxi$taxi_id)
-Total_Distance <-  sum(taxi$trip_miles)
-
 
 
 #fare_data <- read.csv("data/fares.csv")
@@ -61,6 +57,61 @@ server <- function(input, output, session) {
   
   
  ### For Travel Patterns
+
+  
+  
+  aggregated <- reactive({
+    taxi %>%
+      group_by_at(input$choice1) %>%
+      dplyr::summarise(Trips_Count=length(taxi_id),
+                Taxi_Count = n_distinct(taxi_id),
+                Total_Distance=sum(trip_miles))
+  })
+  
+  #Trip_Count <- reactive({  aggregated() %>% summarise(Trip_Count=mean(Trips_Count))})
+  
+  
+  
+  output$TripsCount <-  renderValueBox(
+    valueBox(
+      value= paste0("No. of Trips: ",formatC(mean(aggregated()$Trips_Count,na.rm=TRUE), format = "d", big.mark = ",")),
+      subtitle = paste0("SD: ",trunc(sd(aggregated()$Trips_Count,na.rm=TRUE))),
+      icon("map marker alternate"),
+      color="purple"
+    )
+  )
+  
+  output$TotalDistance <-  renderValueBox(
+    valueBox(
+      value= paste0("Distance Travelled (miles): ",formatC(mean(aggregated()$Total_Distance,na.rm=TRUE), format = "d", big.mark = ",")),
+      subtitle = paste0("SD: ",trunc(sd(aggregated()$Total_Distance,na.rm=TRUE))),
+      icon("road"),
+      color="green"
+    )
+  )
+  
+  output$TaxiCount <-  renderValueBox(
+    valueBox(
+      value= paste0("No. of Taxis: ",formatC(mean(aggregated()$Taxi_Count,na.rm=TRUE), format = "d", big.mark = ",")),
+      subtitle = paste0("SD: ",trunc(sd(aggregated()$Taxi_Count,na.rm=TRUE))),
+      icon("taxi"),
+      color="blue"
+    )
+  )
+  
+  
+#  output$TaxiCount <-  renderValueBox(
+#    valueBox(
+#      subtitle = 'No. of Taxis',
+#      value=formatC(mean(aggregated()$Taxi_Count,na.rm=TRUE), format = "d", big.mark = ","),
+#      icon("taxi"),
+#      color="blue"
+#    )
+#  )
+  
+  
+  
+  
   output$distPlot <- renderPlot({
     ggplot(taxi_summary, aes(x=Time,y=Count,colour=Group))+geom_point() + 
       ggtitle("2019 Traffic Count") +
@@ -85,32 +136,6 @@ server <- function(input, output, session) {
   })
   
   
-  output$TripsCount <-  renderValueBox(
-    valueBox(
-      subtitle= 'No. of Trips',
-      value= formatC(Trips_Count, format = "d", big.mark = ","),
-      icon=icon("stats",lib='glyphicon'),
-      color="purple"
-    )
-  )
-  
-  output$TotalDistance <-  renderValueBox(
-    valueBox(
-      subtitle = 'Distance Travelled',
-      value=formatC(Total_Distance, format = "d", big.mark = ","),
-      icon=icon("stats",lib='glyphicon'),
-      color="green"
-    )
-  )
-  
-  output$TaxiCount <-  renderValueBox(
-    valueBox(
-      subtitle = 'No. of Taxis',
-      value=formatC(Taxi_Count, format = "d", big.mark = ","),
-      icon=icon("stats",lib='glyphicon'),
-      color="blue"
-    )
-  )
-  
+
 
 }
