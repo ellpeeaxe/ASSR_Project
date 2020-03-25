@@ -1,0 +1,116 @@
+```{r}
+library(ggplot2)
+library(tidyverse)
+library(lubridate)
+library(dbplyr)
+install.packages("dygraphs")
+install.packages("xts")
+library(dygraphs)
+library(xts)
+library(forcats)
+
+```
+
+```{r}
+#Part 1: Summary statistics of trips intraday, across weekdays and weekends 
+
+taxitrips <-read.csv("Trips by days.csv")
+head(taxitrips)
+str(taxitrips)
+taxitrips$trips <- as.numeric(taxitrips$trips)
+taxitrips$trip_date <-dmy(taxitrips$trip_date)
+taxitrips$Month <-as.factor(taxitrips$Month)
+taxitrips$Season <-
+str(taxitrips)
+
+```
+```{r}
+#linechart - across the months 
+
+p <-ggplot(taxitrips,aes(x=trip_date, y=trips)) +
+  geom_line() + 
+  geom_smooth(color ="steelblue", se = FALSE) +
+  xlab("") + ylab("# of Trips")
+
+p+scale_x_date(date_breaks = "1 month",date_labels = "%b") 
+
+```
+```{r}
+#trips- across the months 
+
+ggplot(taxitrips, aes(x=trip_date, y=trips)) +
+  geom_area (fill = "#69b3a2" , alpha = 0.7) +
+  geom_line (colour = "#69b3a2", size = 1) +
+  geom_smooth(se = FALSE) +
+  geom_point(size = 0.5, color="#69b3a2")+
+  ggtitle ("Taxi trips across 2019")+
+  xlab("Months") + ylab("# of Trips")+
+  scale_x_date(date_breaks = "1 month",date_labels = "%b") 
+```
+```{r}
+#trips across the seasons 
+
+p1 <-taxitrips %>%
+  mutate (Season = fct_relevel(as.factor(taxitrips$Season),
+                           "Spring","Summer",
+                           "Autumn","Winter")) %>%
+  ggplot(aes(x=Season, y=trips, fill=Season)) +
+    geom_boxplot(alpha = 0.3) + 
+    theme (legend.position = "none") +
+    scale_fill_brewer(palette = "Reds") +
+    xlab("Seasons") + ylab("# of Trips") +
+    ggtitle ("Taxi trips across the seasons of 2019")
+
+p1
+
+
+
+
+```
+
+```{r}
+str(taxitrips)
+```
+
+```{r}
+#trips across the week 
+
+p2 <- taxitrips %>%
+  mutate (Day = fct_relevel(as.factor(taxitrips$Day),
+                           "MONDAY","TUESDAY",
+                           "WEDNESDAY","THURSDAY",
+                           "FRIDAY", "SATURDAY",
+                           "SUNDAY")) %>%
+  ggplot(aes(x=Day, y=trips, fill=Day)) +
+    geom_boxplot(alpha = 0.8) + 
+    geom_jitter(color="black",size=0.2,alpha=0.4) +
+    theme (legend.position = "none") +
+    scale_fill_brewer(palette = "Blues") +
+    xlab("Week") + ylab("# of Trips") +
+    ggtitle ("Taxi trips across the week")
+
+p2
+
+```
+```{r}
+#trips across the time periods 
+
+library(viridis)
+
+p3 <- taxitrips %>%
+  mutate (Day = fct_relevel(as.factor(taxitrips$time_indicator),
+                           "AM Period","Lunch Period",
+                           "PM Period", "Night")) %>%
+  ggplot(aes(x=time_indicator, y=trips, fill=time_indicator)) +
+    geom_violin() +
+    scale_fill_viridis(discrete=TRUE, alpha = 0.6, option = "A") +
+    theme (legend.position = "none") +
+    scale_fill_brewer(palette = "Greens") +
+    xlab("Intraday") + ylab("# of Trips") +
+    ggtitle ("Taxi trips across intraday")
+
+p3
+
+```
+
+
