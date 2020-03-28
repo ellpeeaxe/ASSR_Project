@@ -104,24 +104,24 @@ ui <- dashboardPage(
             title = "Origins and Destinations",
             color = "black", ribbon = FALSE, title_side = "top", collapsible = FALSE,
             
-            fluidRow(
-              tags$li("This dashboard shows the various aspects of Chicago taxi trips in 2019 (time, mileage etc) for an origin. Choose the following to view the travel patterns."),
-              h2(),
-              selectInput("pickup","Pickup Community Area",
-                          choices = community$community),
-              selectInput("cal", "Weekday/weekends",
-                          choices = list('Weekdays', 'Weekend/Holidays') 
-              ),
-              selectInput("time","Time Period",
-                          choices = list('AM Period', 'Lunch Period', 'PM Period', 'Night')),
-              
-              selectInput("ind","Travel Indicators",
-                          choices = list("Average Trips","Average Time", "Average Fare")),
-              tags$li("If the destination is empty on the map, it could be due to no trips or extreme values of the travel indicators."),
-              width = 2, height = 1  
-            ),
+           # fluidRow(
+            #  tags$li("This dashboard shows the various aspects of Chicago taxi trips in 2019 (time, mileage etc) for an origin. Choose the following to view the travel patterns."),
+             # h2(),
+            #  selectInput("pickup","Pickup Community Area",
+            #              choices = community$community),
+            #  selectInput("cal", "Weekday/weekends",
+            #              choices = list('Weekdays', 'Weekend/Holidays') 
+            #  ),
+            #  selectInput("time","Time Period",
+            #              choices = list('AM Period', 'Lunch Period', 'PM Period', 'Night')),
+            #  
+            #  selectInput("ind","Travel Indicators",
+            #              choices = list("Average Trips","Average Time", "Average Fare")),
+            #  tags$li("If the destination is empty on the map, it could be due to no trips or extreme values of the travel indicators."),
+            #  width = 2, height = 1  
+            #),
             
-            fluidRow(leafletOutput("map", width="900px", height = "600px"))
+          #  fluidRow(leafletOutput("map", width="900px", height = "600px"))
           )
         )
       ),
