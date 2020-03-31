@@ -68,31 +68,39 @@ ui <- dashboardPage(
             fluidRow(
                 
               selectInput('choice1', 'Time Type', 
-                            choices =  c(`Year` = 'start_year',`Month` = 'start_month', `Day` = 'start_day'),
-                            multiple = FALSE),
-                
-              column(width = 4,valueBoxOutput("TripsCount")),
-              column(width = 4,valueBoxOutput("TotalDistance")),
-              column(width = 4,valueBoxOutput("TaxiCount")),
+                          choices =  c(`Month` = 'Month',
+                                       `Day of Week`='Day_of_Week',
+                                       `Time Group`='time_indicator',
+                                       `Holiday`='Holiday',
+                                       `Season`='Season'),
+                          multiple = FALSE),
               ),
             
             fluidRow(
-              plotOutput("TripsByTime"),
-              plotOutput("IntraDay"),
-              plotOutput("TripsByDate")
-              ),
-            
-            fluidRow(
-              plotOutput("TripsByDay"),
-              plotOutput("TripsByMonth"),
-              plotOutput("TripsBySeason")
+              valueBoxOutput("TripsCount"),
+              valueBoxOutput("TotalDistance"),
             ),
+                
+            fluidRow(
+              column(width= 6 ,plotOutput("dynamic_plot")),
+              column(width= 6 ,plotOutput("box_plot"))
+              ),
+            
             
             
             fluidRow(
-              column(width= 8,plotOutput("dayHour",height ="300px")),
-              column(width= 8,plotOutput("dayMonth",height ="300px")),
-             )
+              selectInput('choice2', 'Time Type', 
+                          choices =  c(`Month` = 'Month',
+                                       `Day of Week`='Day_of_Week',
+                                       `Time Group`='time_indicator',
+                                       `Holiday`='Holiday',
+                                       `Season`='Season'),
+                          multiple = FALSE)),
+            
+            fluidRow(
+              column(width = 12, plotOutput("TwoFactorPlot"))
+              
+            ),
           )
         )
       ),
