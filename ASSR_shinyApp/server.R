@@ -15,24 +15,11 @@ library(magrittr)
 library(plotly)
 library(feather)
 library(viridis)
-
-
-stat_box_data <- function(x, upper_limit = 90000 ) {
-  return( 
-    data.frame(
-      y = 0.95 * upper_limit,
-      label = paste('count =', 
-                    format(sum(x$trips), big.mark = ",", decimal.mark = ".", scientific = FALSE), ###need help here
-                    '\n',
-                    'mean =', 
-                    format(round(mean(x), 1), big.mark = ",", decimal.mark = ".", scientific = FALSE))
-    )
-  )
-}
+library(RColorBrewer)
 
 
 #Sean & Jayne's Stuff
-taxi <-  read.csv("C:/Users/Seant/Desktop/taxi_descriptive.csv")
+taxi <-  read.csv("taxi_descriptive.csv")
 taxi<- taxi %>%  mutate (Season = fct_relevel(as.factor(Season),
                                               "Spring","Summer",
                                               "Autumn","Winter"))
@@ -46,6 +33,9 @@ taxi %<>% mutate (Month= fct_relevel(as.factor(Month),
                                      "Jan","Feb","Mar","Apr",
                                      "May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"))
 taxi$Holiday <-  as.factor(taxi$Holiday)
+
+nb.cols <- 18
+mycolors <- colorRampPalette(brewer.pal(8, "Set3"))(nb.cols)
 
 #Weiji's Stuff
 community <- fread("C:/Users/Seant/Desktop/community area.csv")
@@ -92,7 +82,7 @@ server <- function(input, output, session) {
   
   output$TripsCount <-  renderValueBox(
     valueBox(
-      value= paste0("No. of Trips: ",formatC(mean(aggregated()$Trips_Count,na.rm=TRUE), format = "d", big.mark = ",")),
+      value= paste0("Mean Trips: ",formatC(mean(aggregated()$Trips_Count,na.rm=TRUE), format = "d", big.mark = ",")),
       subtitle = paste0("SD: ",trunc(sd(aggregated()$Trips_Count,na.rm=TRUE))),
       icon("map marker alternate"),
       color="purple"
@@ -101,7 +91,7 @@ server <- function(input, output, session) {
   
   output$TotalDistance <-  renderValueBox(
     valueBox(
-      value= paste0("Distance Travelled (miles): ",formatC(mean(aggregated()$Total_Distance,na.rm=TRUE), format = "d", big.mark = ",")),
+      value= paste0("Mean Distance (km): ",formatC(mean(aggregated()$Total_Distance,na.rm=TRUE), format = "d", big.mark = ",")),
       subtitle = paste0("SD: ",trunc(sd(aggregated()$Total_Distance,na.rm=TRUE))),
       icon("road"),
       color="green"
@@ -114,29 +104,32 @@ server <- function(input, output, session) {
     taxi %>% 
       group_by_at(input$choice1) %>% 
       group_by(trips,add=TRUE) %>% 
-      dplyr::summarise(Count=sum(trips))
+      dplyr::summarise(Trips=sum(trips))
   })
   
   output$dynamic_plot <- renderPlot({
-    ggplot(aggriplot(), aes_string(x = input$choice1))+geom_bar(aes(y=Count),stat='identity')+
-      ggtitle("Count") +
-      theme(plot.title = element_text(face = "bold", size = (15)),axis.text.x=element_text(angle = 45,hjust =1))
+    ggplot(aggriplot(), aes_string(x = input$choice1,fill = input$choice1))+geom_bar(aes(y=Trips),stat='identity')+
+      ggtitle("Total Count") +
+      scale_fill_manual(values = mycolors) +
+      theme(plot.title = element_text(face = "bold", size = (15)))
   })
   
   boxdata <- reactive({
     taxi %>% 
       group_by_at(input$choice1) %>% 
       group_by(trip_date,trips,add=TRUE) %>% 
-      dplyr::summarise(Count=sum(trips))
+      dplyr::summarise(Trips=sum(trips))
   })
   
   
   
   output$box_plot <- renderPlot({
-    ggplot(boxdata(), aes_string(x = input$choice1,fill=input$choice1))+ geom_boxplot(aes(y=Count),alpha = 0.8) + 
+    ggplot(boxdata(), aes_string(x = input$choice1,fill=input$choice1))+ geom_boxplot(aes(y=Trips),alpha = 0.8) + 
+      geom_jitter(aes(y=Trips),color="black",size=0.2,alpha=0.4) +
       theme (legend.position = "none") +
-      scale_fill_brewer(palette = "Blues") +
-      ggtitle ("Variation")
+      scale_fill_manual(values = mycolors) +
+      theme(plot.title = element_text(face = "bold", size = (15)))+
+      ggtitle ("Daily Variation")
   })
   
   
@@ -152,9 +145,9 @@ server <- function(input, output, session) {
     ggplot(multiplot(), aes_string(x=input$choice1,y=input$choice2))+geom_tile(aes(fill=N),color="white",na.rm=TRUE)+
       scale_fill_gradient(low = "#d8e1cf", high = "#0E3386")+
       guides(fill=guide_legend(title="Total Trips"))+
-      theme_bw()+theme_minimal()
+      theme_bw()+theme_minimal()+
+      theme(plot.title = element_text(face = "bold", size = (15)))
   })
-  
   
   
   #Weiji

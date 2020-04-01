@@ -66,19 +66,18 @@ ui <- dashboardPage(
             color = "black", ribbon = FALSE, title_side = "top", collapsible = FALSE,
             
             fluidRow(
-                
-              selectInput('choice1', 'Time Type', 
+              selectInput('choice1', 'Time Factor', 
                           choices =  c(`Month` = 'Month',
                                        `Day of Week`='Day_of_Week',
                                        `Time Group`='time_indicator',
                                        `Holiday`='Holiday',
                                        `Season`='Season'),
-                          multiple = FALSE),
-              ),
+                          multiple = FALSE)
+            ),
             
             fluidRow(
               valueBoxOutput("TripsCount"),
-              valueBoxOutput("TotalDistance"),
+              valueBoxOutput("TotalDistance")
             ),
                 
             fluidRow(
@@ -86,16 +85,15 @@ ui <- dashboardPage(
               column(width= 6 ,plotOutput("box_plot"))
               ),
             
-            
-            
             fluidRow(
-              selectInput('choice2', 'Time Type', 
+              selectInput('choice2', 'Secondary Factor', 
                           choices =  c(`Month` = 'Month',
                                        `Day of Week`='Day_of_Week',
                                        `Time Group`='time_indicator',
                                        `Holiday`='Holiday',
                                        `Season`='Season'),
-                          multiple = FALSE)),
+                          multiple = FALSE)
+            ),
             
             fluidRow(
               column(width = 12, plotOutput("TwoFactorPlot"))
