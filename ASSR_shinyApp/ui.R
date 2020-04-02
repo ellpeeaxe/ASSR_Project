@@ -133,7 +133,20 @@ ui <- dashboardPage(
           ),
             conditionalPanel(
               condition = "input.ODSelector == 'OAndD'",
-              h1("TEST PANEL")
+              div(style="display:inline-block;width:250px; vertical-align:top",
+                sliderInput("hr", "Start Hour:",
+                            min = 4, max = 23,
+                            value = 7),
+                selectInput("cal", "Weekday/weekends",
+                            choices = list('All','Weekdays', 'Weekend/Holidays') 
+                ),
+                selectInput("ind","Travel Indicators",
+                            choices = list("Average Trips","Average Speed"))
+              ),
+              div(style="display:inline-block;width:750px",
+                  div(style="display:inline-block;width:1000px",leafletOutput("map2", width="450px", height = "600px"))
+                  # div(style="display:inline-block;width:1000px",leafletOutput("map3", width="450px", height = "600px"))
+              )
             )
           )
         )

@@ -1,5 +1,5 @@
 # Set working directory before loading data
-setwd('C:/R Stuff')
+# setwd('C:/R Stuff')
 
 usePackage<-function(p){
   # load a package if installed, else load after installation.
@@ -22,7 +22,6 @@ usePackage("raster")
 usePackage("rgdal")
 usePackage("GISTools")
 usePackage("data.table")
-usePackage("dplyr")
 
 ##data portion 
 taxi_across <- fread('trips across time origin.csv')
@@ -50,9 +49,9 @@ ui <- fluidPage(
 ## server input for the filtering and mapping of the leaflet
 server <- function(input, output) {
   #loading the shapefiles 
-  comm_area <- readOGR("geo_export_4f61d7c6-cb0a-4b29-947a-e8e34933b8e0.shp")
+  comm_area <- readOGR("data/geo_export_4f61d7c6-cb0a-4b29-947a-e8e34933b8e0/geo_export_4f61d7c6-cb0a-4b29-947a-e8e34933b8e0.shp")
   comm_area <- spTransform(comm_area, CRS("+proj=longlat +ellps=GRS80"))
-  centroids <- readOGR("Layer_Chicago.shp")
+  centroids <- readOGR("data/Layer_Chicago/Layer_Chicago.shp")
   centroids <-spTransform(centroids, CRS("+proj=longlat +ellps=GRS80"))
   
   #basemap
@@ -62,47 +61,47 @@ server <- function(input, output) {
   m <- reactive({merge(comm_area, filter(), by.x ='area_numbe', by.y = 'pickup_community_area')})
 
   # speed across time 
-  pal <-
-    colorBin(palette = rev(brewer.pal(7,"YlGnBu")),
+  pal2 <-
+    colorBin(palette = rev(brewer.pal2(7,"YlGnBu")),
              domain = c(0,120),
              na.color = "#00000000",
              bins=c(0,20,30,40,50,110))
   # create the base map, default will be openstreetmap if not selected 
   # added centroids point as well
-  leaflet_speed <- reactive({leaflet(comm_area) %>% addTiles() %>% addPolygons(fillColor = ~pal(m()$average_speed),
+  leaflet_speed2 <- reactive({leaflet(comm_area) %>% addTiles() %>% addPolygons(fillColor = ~pal2(m()$average_speed),
                                                                               weight = 2,
                                                                               opacity = 1,
                                                                               color = "grey",
                                                                               dashArray = "3",
-                                                                              fillOpacity = 0.8) %>% addLegend("topright", pal, values=(0:120), title = "Average Speed", labFormat = labelFormat(suffix = " km/h", between = '-'))%>%addLabelOnlyMarkers(data = centroids,
+                                                                              fillOpacity = 0.8) %>% leaflet::addLegend("topright", pal2, values=(0:120), title = "Average Speed", labFormat = labelFormat(suffix = " km/h", between = '-'))%>%addLabelOnlyMarkers(data = centroids,
                                                                                                                                                                                                                                                          lng = ~centroid_x, lat = ~centroid_y, label = ~area_num_1,
                                                                                                                                                                                                                                                          labelOptions = labelOptions(noHide = TRUE, direction = 'center', textOnly = TRUE))})
   #trips across time 
-  pal_trips <- colorBin(palette = rev(brewer.pal(11,"RdYlGn")),
+  pal_trips2 <- colorBin(palette = rev(brewer.pal2(11,"RdYlGn")),
                         domain = c(0,5000),
                         na.color = "#00000000",
                         bins=c(0,1,2,5,10, 50,100,500,1000,2000,2500,3000,3500))
   
-  leaflet_trips <- reactive({leaflet(comm_area) %>% addTiles() %>% addPolygons(fillColor = ~pal_trips(m()$avg_trips),
+  leaflet_trips2 <- reactive({leaflet(comm_area) %>% addTiles() %>% addPolygons(fillColor = ~pal_trips2(m()$avg_trips),
                                                                                weight = 2,
                                                                                opacity = 1,
                                                                                color = "grey",
                                                                                dashArray = "3",
-                                                                               fillOpacity = 0.8) %>% addLegend("topright", pal_trips, values = (0:2000),  title = "Average Trips Taken", labFormat = labelFormat(suffix = ' trips', between = '-'))%>%addLabelOnlyMarkers(data = centroids,
+                                                                               fillOpacity = 0.8) %>% leaflet::addLegend("topright", pal_trips2, values = (0:2000),  title = "Average Trips Taken", labFormat = labelFormat(suffix = ' trips', between = '-'))%>%addLabelOnlyMarkers(data = centroids,
                                                                                                                                                                                                                                                                           lng = ~centroid_x, lat = ~centroid_y, label = ~area_num_1,
                                                                                                                                                                                                                                                                           labelOptions = labelOptions(noHide = TRUE, direction = 'center', textOnly = TRUE))})
   
-  leaflet_selection <-reactive({
+  leaflet_selection2 <-reactive({
     if (input$ind == "Average Speed") {
-      leaflet_selection <- leaflet_speed()
+      leaflet_selection2 <- leaflet_speed2()
     }
     else {
-      leaflet_selection <- leaflet_trips()
+      leaflet_selection2 <- leaflet_trips2()
     }
-    return(leaflet_selection)
+    return(leaflet_selection2)
   })
   
-  output$map <- renderLeaflet(leaflet_selection())             
+  output$map2 <- renderLeaflet(leaflet_selection2())             
 }
 
 
