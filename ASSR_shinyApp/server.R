@@ -16,7 +16,13 @@ library(plotly)
 library(feather)
 library(viridis)
 library(RColorBrewer)
-
+library(leaflet)
+library(sp)
+library(data.table)
+library(rgeos)
+library(raster)
+library(rgdal)
+library(GISTools)
 
 #Sean & Jayne's Stuff
 taxi <-  read.csv("../taxi_descriptive.csv")
@@ -69,8 +75,7 @@ server <- function(input, output, session) {
 #  })
   
   
- ### For Travel Patterns 
-  
+ ###For Travel Patterns 
   ##Sean & Jayne
 
   aggregated <- reactive({
@@ -135,7 +140,7 @@ server <- function(input, output, session) {
     ggplot(aggriplot(), aes_string(x = input$choice1,fill = input$choice1))+geom_bar(aes(y=Trips),stat='identity')+
       ggtitle("Total Count") +
       scale_fill_manual(values = mycolors) +
-      theme(plot.title = element_text(face = "bold", size = (15)))
+      theme(plot.title = element_text(face = "bold"))
   })
   
   boxdata <- reactive({
@@ -152,7 +157,7 @@ server <- function(input, output, session) {
       geom_jitter(aes(y=Trips),color="black",size=0.2,alpha=0.4) +
       theme (legend.position = "none") +
       scale_fill_manual(values = mycolors) +
-      theme(plot.title = element_text(face = "bold", size = (15)))+
+      theme(plot.title = element_text(face = "bold"))+
       ggtitle ("Daily Variation")
   })
   
@@ -243,12 +248,5 @@ server <- function(input, output, session) {
     }
     return(leaflet_selection)
   })
-
-
-
-
   output$map <- renderLeaflet(leaflet_selection())
-
-
-  
 }

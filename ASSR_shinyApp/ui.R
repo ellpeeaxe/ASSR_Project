@@ -36,6 +36,7 @@ usePackage("dygraphs")
 usePackage("xts")
 usePackage("forcats")
 
+community <- fread("../data/community area.csv")
 
 ###########################################################################################
 #                                                                                         #
@@ -59,7 +60,7 @@ ui <- dashboardPage(
       selected = 1,
       tabItem(
         tabName = "travelPatterns",
-        div(style="width:1980px",
+        div(style="width:1200px",
           fluidRow(
             div(style="display: inline-block",
             selectInput('choice1', 'Time Factor', 
@@ -75,12 +76,11 @@ ui <- dashboardPage(
             div(style="display: inline-block", valueBoxOutput("TotalDistance")),
             div(style="display: inline-block", valueBoxOutput("DistanceSD")),
           ),
-          
               
           fluidRow(
-            div(width= 6 ,plotOutput("dynamic_plot")),
-            div(width= 6 ,plotOutput("box_plot"))
-            ),
+            div(style="display: inline-block; width:550px", plotOutput("dynamic_plot", width="100%")),
+            div(style="display: inline-block; width:550px", plotOutput("box_plot", width="100%"))
+          ),
           
           fluidRow(
             selectInput('choice2', 'Secondary Factor', 
@@ -93,25 +93,20 @@ ui <- dashboardPage(
           ),
           
           fluidRow(
-            column(width = 12, plotOutput("TwoFactorPlot"))
-            
+            div(style="display: inline-block; width:1200px", plotOutput("TwoFactorPlot"))
           ),
         )
       ),
       tabItem(
-        tabName = "Chicago Taxi Travel Patterns Dashboard",
-        div(style="display: inline-block",
+        tabName = "originDestination",
+        div(style="width:1200px",
           fluidRow(
-            box(
-              width = 16,
-              title = "Origins and Destinations",
-              color = "black", ribbon = FALSE, title_side = "top", collapsible = FALSE,
-              
+            column(width = 4,
              fluidRow(
                tags$li("This dashboard shows the various aspects of Chicago taxi trips in 2019 (time, mileage etc) for an origin. Choose the following to view the travel patterns."),
                h2(),
-               # selectInput("pickup","Pickup Community Area",
-               #             choices = community$community),
+               selectInput("pickup","Pickup Community Area",
+                            choices = community$community),
                selectInput("cal", "Weekday/weekends",
                            choices = list('Weekdays', 'Weekend/Holidays') 
                            ),
@@ -119,8 +114,9 @@ ui <- dashboardPage(
                            choices = list('AM Period', 'Lunch Period', 'PM Period', 'Night')),
                selectInput("ind","Travel Indicators",
                            choices = list("Average Trips","Average Time", "Average Fare")),
+               ),
+             column(width = 8,
                tags$li("If the destination is empty on the map, it could be due to no trips or extreme values of the travel indicators."),
-               width = 2, height = 1  
                ),
               
              fluidRow(leafletOutput("map", width="900px", height = "600px"))
