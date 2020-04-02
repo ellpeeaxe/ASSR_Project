@@ -59,47 +59,41 @@ ui <- dashboardPage(
       selected = 1,
       tabItem(
         tabName = "travelPatterns",
-        fluidRow(
-          box(
-            width = 16,
-            title = "Travel Patterns",
-            color = "black", ribbon = FALSE, title_side = "top", collapsible = FALSE,
-            
-            fluidRow(
-              selectInput('choice1', 'Time Factor', 
-                          choices =  c(`Month` = 'Month',
-                                       `Day of Week`='Day_of_Week',
-                                       `Time Group`='time_indicator',
-                                       `Holiday`='Holiday',
-                                       `Season`='Season'),
-                          multiple = FALSE)
+        div(style="width:1980px",
+          fluidRow(
+            div(style="display: inline-block",
+            selectInput('choice1', 'Time Factor', 
+                        choices =  c(`Month` = 'Month',
+                                     `Day of Week`='Day_of_Week',
+                                     `Time Group`='time_indicator',
+                                     `Holiday`='Holiday',
+                                     `Season`='Season'),
+                        multiple = FALSE),
             ),
-            
-            fluidRow(
-              valueBoxOutput("TripsCount"),
-              valueBoxOutput("TotalDistance")
-            ),
-                
-            fluidRow(
-              column(width= 6 ,plotOutput("dynamic_plot")),
-              column(width= 6 ,plotOutput("box_plot"))
-              ),
-            
-            fluidRow(
-              selectInput('choice2', 'Secondary Factor', 
-                          choices =  c(`Month` = 'Month',
-                                       `Day of Week`='Day_of_Week',
-                                       `Time Group`='time_indicator',
-                                       `Holiday`='Holiday',
-                                       `Season`='Season'),
-                          multiple = FALSE)
-            ),
-            
-            fluidRow(
-              column(width = 12, plotOutput("TwoFactorPlot"))
+            div(style="display: inline-block", valueBoxOutput("TripsCount")),
+            div(style="display: inline-block", valueBoxOutput("TotalDistance"))
+          ),
+          
               
+          fluidRow(
+            div(width= 6 ,plotOutput("dynamic_plot")),
+            div(width= 6 ,plotOutput("box_plot"))
             ),
-          )
+          
+          fluidRow(
+            selectInput('choice2', 'Secondary Factor', 
+                        choices =  c(`Month` = 'Month',
+                                     `Day of Week`='Day_of_Week',
+                                     `Time Group`='time_indicator',
+                                     `Holiday`='Holiday',
+                                     `Season`='Season'),
+                        multiple = FALSE)
+          ),
+          
+          fluidRow(
+            column(width = 12, plotOutput("TwoFactorPlot"))
+            
+          ),
         )
       ),
       tabItem(

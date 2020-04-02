@@ -19,7 +19,7 @@ library(RColorBrewer)
 
 
 #Sean & Jayne's Stuff
-taxi <-  read.csv("taxi_descriptive.csv")
+taxi <-  read.csv("../taxi_descriptive.csv")
 taxi<- taxi %>%  mutate (Season = fct_relevel(as.factor(Season),
                                               "Spring","Summer",
                                               "Autumn","Winter"))
@@ -82,19 +82,23 @@ server <- function(input, output, session) {
   
   output$TripsCount <-  renderValueBox(
     valueBox(
-      value= paste0("Mean Trips: ",formatC(mean(aggregated()$Trips_Count,na.rm=TRUE), format = "d", big.mark = ",")),
-      subtitle = paste0("SD: ",trunc(sd(aggregated()$Trips_Count,na.rm=TRUE))),
+      value= formatC(mean(aggregated()$Trips_Count,na.rm=TRUE), format = "d", big.mark = ","),
+      # subtitle = paste0("SD: ",trunc(sd(aggregated()$Trips_Count,na.rm=TRUE))),
+      subtitle = "Mean Trips",
       icon("map marker alternate"),
-      color="purple"
+      color="purple",
+      size="tiny"
     )
   )
   
   output$TotalDistance <-  renderValueBox(
     valueBox(
-      value= paste0("Mean Distance (km): ",formatC(mean(aggregated()$Total_Distance,na.rm=TRUE), format = "d", big.mark = ",")),
-      subtitle = paste0("SD: ",trunc(sd(aggregated()$Total_Distance,na.rm=TRUE))),
+      value= formatC(mean(aggregated()$Total_Distance,na.rm=TRUE), format = "d", big.mark = ","),
+      # subtitle = paste0("SD: ",trunc(sd(aggregated()$Total_Distance,na.rm=TRUE))),
+      subtitle = "Mean Distance (km)",
       icon("road"),
-      color="green"
+      color="green",
+      size="tiny"
     )
   )
   
@@ -159,18 +163,18 @@ server <- function(input, output, session) {
 #  centroids <-spTransform(centroids, CRS("+proj=longlat +ellps=GRS80"))
 #  centroids_test <- reactive({subset(centroids, community == input$pickup)})
   #basemap
-  
-  
+
+
 #  filter <- reactive({subset(taxi_od, cal_day_desc == input$cal & pickup_ca == input$pickup & time_indicator == input$time)})
 #  m <- reactive({merge(comm_area, filter(), by.x ='area_numbe', by.y = 'dropoff_community_area')})
-#  
+#
   # time map
 #  pal <-
 #    colorBin(palette = rev(brewer.pal(9,"RdYlGn")),
 ##             domain = c(0,1400),
 #             na.color = "#00000000",
 #             bins=c(0,15,30,45,60,75,90,120))
-  # create the base map, default will be openstreetmap if not selected 
+  # create the base map, default will be openstreetmap if not selected
   # added centroids point as well
 #  leaflet_time <- reactive({leaflet(comm_area) %>% addTiles() %>% addPolygons(fillColor = ~pal(m()$average_time),
 #                                                                              weight = 2,
@@ -178,36 +182,36 @@ server <- function(input, output, session) {
 #                                                                              color = "grey",
 #                                                                              dashArray = "3",
 #                                                                              fillOpacity = 0.8) %>% addLegend("topright", pal, values=(0:120), title = "Average Time Taken", labFormat = labelFormat(suffix = " mins", between = '-'))%>% addMarkers(lng = centroids_test()$centroid_x, lat=centroids_test()$centroid_y)})
-#  
-  
-  
+#
+
+
 #  pal_fare <- colorBin(palette = rev(brewer.pal(6,"RdYlGn")),
 #                       domain = c(0,7000),
 #                       na.color = "#00000000",
 #                       bins=c(0,10,20,30,40,50))
-  
+
 #  leaflet_fares <- reactive({leaflet(comm_area) %>% addTiles() %>% addPolygons(fillColor = ~pal_fare(m()$average_fare),
  #                                                                              weight = 2,
 #                                                                               opacity = 1,
  #                                                                              color = "grey",
 #                                                                               dashArray = "3",
  #                                                                              fillOpacity = 0.8) %>% addLegend("topright", pal_fare, values = (0:50), title = "Average Amount Paid", labFormat = labelFormat(prefix = "$", between = '- $'))%>% addMarkers(lng = centroids_test()$centroid_x, lat=centroids_test()$centroid_y)})
-  
+
 #  pal_trips <- colorBin(palette = rev(brewer.pal(11,"RdYlGn")),
 #                        domain = c(0,5000),
 #                        na.color = "#00000000",
 #                        bins=c(0,1,2,5,10,20,50,100,200,300,500,1000,2000,3000,4000,5000))
-  
+
 #  leaflet_trips <- reactive({leaflet(comm_area) %>% addTiles() %>% addPolygons(fillColor = ~pal_trips(m()$avg_trips),
 #                                                                               weight = 2,
  #                                                                              opacity = 1,
 #                                                                               color = "grey",
   #                                                                             dashArray = "3",
   #                                                                             fillOpacity = 0.8) %>% addLegend("topright", pal_trips, values = (0:5000),  title = "Average Trips Taken", labFormat = labelFormat(suffix = 'trips', between = '-'))%>% addMarkers(lng = centroids_test()$centroid_x, lat=centroids_test()$centroid_y)})
-  
-  
-  
-  
+
+
+
+
 #  leaflet_selection <-reactive({
 #    if (input$ind == "Average Time") {
 #      leaflet_selection <- leaflet_time()
@@ -220,10 +224,10 @@ server <- function(input, output, session) {
 #    }
 #    return(leaflet_selection)
 #  })
-  
-  
-  
-  
+
+
+
+
 #  output$map <- renderLeaflet(leaflet_selection())
 
 
