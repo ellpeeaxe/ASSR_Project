@@ -89,7 +89,6 @@ server <- function(input, output, session) {
   output$TripsCount <-  renderValueBox(
     valueBox(
       value= formatC(mean(aggregated()$Trips_Count,na.rm=TRUE), format = "d", big.mark = ","),
-      # subtitle = paste0("SD: ",trunc(sd(aggregated()$Trips_Count,na.rm=TRUE))),
       subtitle = "Mean Trips",
       icon("map marker alternate"),
       color="purple",
@@ -99,7 +98,6 @@ server <- function(input, output, session) {
   
   output$TripsSD <-  renderValueBox(
     valueBox(
-      # value= formatC(mean(aggregated()$Trips_Count,na.rm=TRUE), format = "d", big.mark = ","),
       value = trunc(sd(aggregated()$Trips_Count,na.rm=TRUE)),
       subtitle = "Trips SD",
       icon("map marker alternate"),
@@ -111,7 +109,6 @@ server <- function(input, output, session) {
   output$TotalDistance <-  renderValueBox(
     valueBox(
       value= formatC(mean(aggregated()$Total_Distance,na.rm=TRUE), format = "d", big.mark = ","),
-      # subtitle = paste0("SD: ",trunc(sd(aggregated()$Total_Distance,na.rm=TRUE))),
       subtitle = "Mean Distance (km)",
       icon("road"),
       color="green",
@@ -121,7 +118,6 @@ server <- function(input, output, session) {
   
   output$DistanceSD <-  renderValueBox(
     valueBox(
-      # value= formatC(mean(aggregated()$Total_Distance,na.rm=TRUE), format = "d", big.mark = ","),
       value = trunc(sd(aggregated()$Total_Distance,na.rm=TRUE)),
       subtitle = "Distance SD (km)",
       icon("road"),

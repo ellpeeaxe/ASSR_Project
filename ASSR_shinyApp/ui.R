@@ -83,7 +83,7 @@ ui <- dashboardPage(
           ),
           
           fluidRow(
-            selectInput('choice2', 'Secondary Factor', 
+            selectInput('choice2', 'Secondary Factor',
                         choices =  c(`Month` = 'Month',
                                      `Day of Week`='Day_of_Week',
                                      `Time Group`='time_indicator',
@@ -99,25 +99,24 @@ ui <- dashboardPage(
       ),
       tabItem(
         tabName = "originDestination",
-        div(style="width:1200px",
-          fluidRow(
-            column(width = 4,
-             fluidRow(
-               tags$li("This dashboard shows the various aspects of Chicago taxi trips in 2019 (time, mileage etc) for an origin. Choose the following to view the travel patterns."),
-               selectInput("pickup","Pickup Community Area",
-                            choices = community$community),
-               selectInput("cal", "Weekday/weekends",
-                           choices = list('Weekdays', 'Weekend/Holidays') 
-                           ),
-               selectInput("time","Time Period",
-                           choices = list('AM Period', 'Lunch Period', 'PM Period', 'Night')),
-               selectInput("ind","Travel Indicators",
-                           choices = list("Average Trips","Average Time", "Average Fare")),
-               )),
-            column(width = 8,
-                   tags$li("If the destination is empty on the map, it could be due to no trips or extreme values of the travel indicators."),
-                   div(leafletOutput("map", width="900px", height = "600px"))
-            )
+        div(
+          h4("This dashboard shows the various aspects of Chicago taxi trips in 2019 (time, mileage etc) for an origin. Choose the following to view the travel patterns."),
+          div(),
+          br(),
+          div(style="display:inline-block;width:250px; vertical-align:top",
+             selectInput("pickup","Pickup Community Area",
+                          choices = community$community),
+             selectInput("cal", "Weekday/weekends",
+                         choices = list('Weekdays', 'Weekend/Holidays') 
+                         ),
+             selectInput("time","Time Period",
+                         choices = list('AM Period', 'Lunch Period', 'PM Period', 'Night')),
+             selectInput("ind","Travel Indicators",
+                         choices = list("Average Trips","Average Time", "Average Fare")),
+           ),
+          div(style="display:inline-block;width:750px",
+                 h4("If the destination is empty on the map, it could be due to no trips or extreme values of the travel indicators."),
+                 div(style="display:inline-block;width:1000px",leafletOutput("map", width="900px", height = "600px"))
           )
         )
       ),
