@@ -1,5 +1,5 @@
 # Set working directory before loading data
-setwd('C:/Users/lta-spl2/Desktop/Wei Ji Work/R Stuff/For WJ')
+# setwd('C:/Users/lta-spl2/Desktop/Wei Ji Work/R Stuff/For WJ')
 
 usePackage<-function(p){
   # load a package if installed, else load after installation.
@@ -23,11 +23,15 @@ usePackage("rgdal")
 usePackage("GISTools")
 usePackage("data.table")
 usePackage("dplyr")
+usePackage("xts")
+
+# require(devtools)
+# install_version("xts", version = "0.9-7", repos = "http://cran.us.r-project.org")
 
 ##data portion 
-community <- fread("community area.csv")
-taxi_od <- fread('trips for R split.csv') 
-taxi_across <- fread('trips for R across time.csv')
+community <- fread("data/community area.csv")
+taxi_od <- fread('data/trips for R split.csv') 
+taxi_across <- fread('data/trips for R across time.csv')
 
 # UI is working
 ui <- fluidPage(
@@ -55,8 +59,8 @@ ui <- fluidPage(
 ## server input for the filtering and mapping of the leaflet
 server <- function(input, output) {
   #loading the shapefiles 
-  comm_area <- readOGR("geo_export_4f61d7c6-cb0a-4b29-947a-e8e34933b8e0.shp")
-  centroids <- readOGR("Layer_Chicago.shp")
+  comm_area <- readOGR("data/geo_export_4f61d7c6-cb0a-4b29-947a-e8e34933b8e0/geo_export_4f61d7c6-cb0a-4b29-947a-e8e34933b8e0.shp")
+  centroids <- readOGR("data/Layer_Chicago/Layer_Chicago.shp")
   comm_area <- spTransform(comm_area, CRS("+proj=longlat +ellps=GRS80"))
   centroids <-spTransform(centroids, CRS("+proj=longlat +ellps=GRS80"))
   centroids_test <- reactive({subset(centroids, community == input$pickup)})
@@ -95,7 +99,7 @@ server <- function(input, output) {
                                                                      opacity = 1,
                                                                      color = "grey",
                                                                      dashArray = "3",
-                                                                     fillOpacity = 0.8) %>% addLegend("topright", pal_fare, values = (0:50), title = "Average Amount Paid", labFormat = labelFormat(prefix = "$", between = '- $'))%>% addLabelOnlyMarkers(data = centroids,
+                                                                     fillOpacity = 0.8) %>% leaflet::addLegend("topright", pal_fare, values = (0:50), title = "Average Amount Paid", labFormat = labelFormat(prefix = "$", between = '- $'))%>% addLabelOnlyMarkers(data = centroids,
                                                                                                                                                                                                                                                            lng = ~centroid_x, lat = ~centroid_y, label = ~area_num_1,
                                                                                                                                                                                                                                                            labelOptions = labelOptions(noHide = TRUE, direction = 'center', textOnly = TRUE)) %>% addMarkers(lng = centroids_test()$centroid_x, lat=centroids_test()$centroid_y)})
   
@@ -109,7 +113,7 @@ server <- function(input, output) {
                                                                                opacity = 1,
                                                                                color = "grey",
                                                                                dashArray = "3",
-                                                                               fillOpacity = 0.8) %>% addLegend("topright", pal_trips, values = (0:5000),  title = "Average Trips Taken", labFormat = labelFormat(suffix = 'trips', between = '-'))%>% addLabelOnlyMarkers(data = centroids,
+                                                                               fillOpacity = 0.8) %>% leaflet::addLegend("topright", pal_trips, values = (0:5000),  title = "Average Trips Taken", labFormat = labelFormat(suffix = 'trips', between = '-'))%>% addLabelOnlyMarkers(data = centroids,
                                                                                                                                                                                                                                                                            lng = ~centroid_x, lat = ~centroid_y, label = ~area_num_1,
                                                                                                                                                                                                                                                                            labelOptions = labelOptions(noHide = TRUE, direction = 'center', textOnly = TRUE)) %>% addMarkers(lng = centroids_test()$centroid_x, lat=centroids_test()$centroid_y)})
   

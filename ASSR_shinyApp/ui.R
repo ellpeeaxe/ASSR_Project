@@ -104,7 +104,6 @@ ui <- dashboardPage(
             column(width = 4,
              fluidRow(
                tags$li("This dashboard shows the various aspects of Chicago taxi trips in 2019 (time, mileage etc) for an origin. Choose the following to view the travel patterns."),
-               h2(),
                selectInput("pickup","Pickup Community Area",
                             choices = community$community),
                selectInput("cal", "Weekday/weekends",
@@ -114,12 +113,10 @@ ui <- dashboardPage(
                            choices = list('AM Period', 'Lunch Period', 'PM Period', 'Night')),
                selectInput("ind","Travel Indicators",
                            choices = list("Average Trips","Average Time", "Average Fare")),
-               ),
-             column(width = 8,
-               tags$li("If the destination is empty on the map, it could be due to no trips or extreme values of the travel indicators."),
-               ),
-              
-             fluidRow(leafletOutput("map", width="900px", height = "600px"))
+               )),
+            column(width = 8,
+                   tags$li("If the destination is empty on the map, it could be due to no trips or extreme values of the travel indicators."),
+                   div(leafletOutput("map", width="900px", height = "600px"))
             )
           )
         )
