@@ -133,19 +133,27 @@ ui <- dashboardPage(
           ),
             conditionalPanel(
               condition = "input.ODSelector == 'OAndD'",
-              div(style="display:inline-block;width:200px; vertical-align:top",
-                sliderInput("hr2", "Start Hour:",
-                            min = 4, max = 23,
-                            value = 7),
-                selectInput("cal2", "Weekday/weekends",
-                            choices = list('All','Weekdays', 'Weekend/Holidays') 
+              fluidRow(
+                div(style="display:inline-block;width:350px; vertical-align:top",
+                  sliderInput("hr2", "Start Hour:",
+                              min = 4, max = 23,
+                              value = 7)
                 ),
-                selectInput("ind2","Travel Indicators",
-                            choices = list("Average Trips","Average Speed"))
+                div(style="display:inline-block;width:350px; vertical-align:top",
+                  selectInput("cal2", "Weekday/weekends",
+                              choices = list('All','Weekdays', 'Weekend/Holidays') 
+                  )
+                ),
+                div(style="display:inline-block;width:350px; vertical-align:top",
+                  selectInput("ind2","Travel Indicators",
+                              choices = list("Average Trips","Average Speed"))
+                )
               ),
-              div(style="display:inline-block;width:825px",
-                  div(style="display:inline-block;width:400px",leafletOutput("map2", width="400px", height = "600px")),
-                  div(style="display:inline-block;width:400px",leafletOutput("map3", width="400px", height = "600px"))
+              fluidRow(
+                div(style="display:inline-block;width:1200px",
+                    div(style="display:inline-block;width:575px",leafletOutput("map2", width="500px", height = "600px")),
+                    div(style="display:inline-block;width:575px",leafletOutput("map3", width="500px", height = "600px"))
+                )
               )
             )
           )

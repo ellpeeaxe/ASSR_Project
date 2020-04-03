@@ -73,9 +73,11 @@ server <- function(input, output, session) {
 #      theme(axis.text=element_text(size=10,), axis.title.y = element_blank(), legend.position = "bottom") 
 #  })
   
-  
- ###For Travel Patterns 
-  ##Sean & Jayne
+  ###########################################################################################
+  #                                                                                         #
+  #                                 TRAVEL PATTERNS                                         #
+  #                                                                                         #
+  ###########################################################################################
 
   aggregated <- reactive({
     taxi %>%
@@ -174,6 +176,11 @@ server <- function(input, output, session) {
   })
   
   
+  ###########################################################################################
+  #                                                                                         #
+  #                                 Origin & Destination                                    #
+  #                                                                                         #
+  ###########################################################################################
   #Weiji
   #loading the shapefiles 
   comm_area <- readOGR("../data/geo_export_4f61d7c6-cb0a-4b29-947a-e8e34933b8e0/geo_export_4f61d7c6-cb0a-4b29-947a-e8e34933b8e0.shp")
@@ -348,4 +355,12 @@ server <- function(input, output, session) {
   })
   
   output$map3 <- renderLeaflet(leaflet_selection())
+  
+  
+  ###########################################################################################
+  #                                                                                         #
+  #                                     Operations                                          #
+  #                                                                                         #
+  ###########################################################################################
+  # insert darrens code here
 }
