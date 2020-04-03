@@ -42,7 +42,7 @@ ui <- fluidPage(
                selectInput("ind","Travel Indicators",
                               choices = list("Average Trips","Average Speed")),
                              width = 2, height = 1),
-  mainPanel(leafletOutput("map", width="900px", height = "600px"))
+  mainPanel(leafletOutput("map2", width="900px", height = "600px"))
 )
 
 
@@ -55,14 +55,12 @@ server <- function(input, output) {
   centroids <-spTransform(centroids, CRS("+proj=longlat +ellps=GRS80"))
   
   #basemap
-  
-
   filter <- reactive({subset(taxi_across, cal_day_desc == input$cal & start_hour== input$hr)})
   m <- reactive({merge(comm_area, filter(), by.x ='area_numbe', by.y = 'pickup_community_area')})
 
   # speed across time 
   pal2 <-
-    colorBin(palette = rev(brewer.pal2(7,"YlGnBu")),
+    colorBin(palette = rev(brewer.pal(7,"YlGnBu")),
              domain = c(0,120),
              na.color = "#00000000",
              bins=c(0,20,30,40,50,110))
@@ -77,7 +75,7 @@ server <- function(input, output) {
                                                                                                                                                                                                                                                          lng = ~centroid_x, lat = ~centroid_y, label = ~area_num_1,
                                                                                                                                                                                                                                                          labelOptions = labelOptions(noHide = TRUE, direction = 'center', textOnly = TRUE))})
   #trips across time 
-  pal_trips2 <- colorBin(palette = rev(brewer.pal2(11,"RdYlGn")),
+  pal_trips2 <- colorBin(palette = rev(brewer.pal(11,"RdYlGn")),
                         domain = c(0,5000),
                         na.color = "#00000000",
                         bins=c(0,1,2,5,10, 50,100,500,1000,2000,2500,3000,3500))
