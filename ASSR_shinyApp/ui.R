@@ -150,6 +150,7 @@ ui <- dashboardPage(
                 )
               ),
               fluidRow(
+                br(),br(),br(),
                 div(style="display:inline-block;width:1200px",
                     div(style="display:inline-block;width:575px",leafletOutput("map2", width="500px", height = "600px")),
                     div(style="display:inline-block;width:575px",leafletOutput("map3", width="500px", height = "600px"))
