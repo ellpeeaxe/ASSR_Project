@@ -205,7 +205,7 @@ server <- function(input, output, session) {
                                                                               opacity = 1,
                                                                               color = "grey",
                                                                               dashArray = "3",
-                                                                              fillOpacity = 0.8) %>% addLegend("topright", pal, values=(0:120), title = "Average Time Taken", labFormat = labelFormat(suffix = " mins", between = '-'))%>% addLabelOnlyMarkers(data = centroids,
+                                                                              fillOpacity = 0.8) %>% leaflet::addLegend("topright", pal, values=(0:120), title = "Average Time Taken", labFormat = labelFormat(suffix = " mins", between = '-'))%>% addLabelOnlyMarkers(data = centroids,
                                                                                                                                                                                                                                                                lng = ~centroid_x, lat = ~centroid_y, label = ~area_num_1,
                                                                                                                                                                                                                                                                labelOptions = labelOptions(noHide = TRUE, direction = 'center', textOnly = TRUE)) %>% addMarkers(lng = centroids_test()$centroid_x, lat=centroids_test()$centroid_y)})
   pal_fare <- colorBin(palette = rev(brewer.pal(6,"RdYlGn")),
