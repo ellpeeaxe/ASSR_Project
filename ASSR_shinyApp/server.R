@@ -347,6 +347,7 @@ server <- function(input, output, session) {
   #                                     Operations                                          #
   #                                                                                         #
   ###########################################################################################
+<<<<<<< HEAD
   # insert darrens code here
   
   ###########################################################################################
@@ -429,4 +430,20 @@ server <- function(input, output, session) {
                                                                                                  addMarkers(lng = c(centroids_ptrip()$centroid_x,centroids_dtrip()$centroid_x), lat=c(centroids_ptrip()$centroid_y,centroids_dtrip()$centroid_y))})
   
   output$trip_map <- renderLeaflet(leaflet_trip())
+=======
+  ops_data <-  read.csv("../data/ops_data.csv")
+  ops_data<- ops_data %>%  mutate (ops_season = fct_relevel(as.factor(season),
+                                                "Spring","Summer",
+                                                "Autumn","Winter"))
+  ops_data %<>% mutate (ops_time_bin = fct_relevel(as.factor(time_bin),
+                                                  "AM Period","Lunch Period",
+                                                  "PM Period","Night"))
+  ops_data %<>% mutate (ops_day = fct_relevel(as.factor(day),
+                                              "Mon","Tue","Wed","Thu",
+                                              "Fri","Sat","Sun"))
+  ops_data %<>% mutate (ops_month= fct_relevel(as.factor(month),
+                                       "Jan","Feb","Mar","Apr",
+                                       "May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"))
+  ops_data$Holiday <-  as.factor(ops_data$holiday)
+>>>>>>> 023fac94a587b9c5d85c7ec36e4cc183663ce339
 }

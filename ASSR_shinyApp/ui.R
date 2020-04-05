@@ -162,12 +162,16 @@ ui <- dashboardPage(
       ),
       tabItem(
         tabName = "operations",
-        fluidRow(
-          box(
-            width = 16,
-            title = "Operational Efficiency",
-            color = "black", ribbon = FALSE, title_side = "top", collapsible = FALSE
-          )
+        div(
+          selectInput(
+            'ops_time_factor', 'Time Factor', 
+            choices =  c(`Month` = 'ops_month',
+                         `Day of Week`='ops_day',
+                         `Time Group`='ops_time_bin',
+                         `Holiday`='ops_hol',
+                         `Season`='ops_season',
+                         `Company` = 'ops_company'),
+            multiple = FALSE), 
         )
       ),
       tabItem(
