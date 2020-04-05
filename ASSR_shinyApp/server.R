@@ -368,6 +368,32 @@ server <- function(input, output, session) {
       scale_fill_manual(values = mycolors) +
       ggtitle("Median Trip Downtime")
   })
+  
+  earnings_data <- reactive({
+    d <- ops_data %>%
+      group_by_(input$ops_time_factor, 'company') %>%
+      dplyr::summarise(fare=mean(fare))
+    return(d)
+  })
+  output$earnings_chart <- renderPlot({
+    ggplot(earnings_data(), aes_string(x = input$ops_time_factor)) + 
+      geom_bar(aes(y = fare, fill = company), stat="identity", position = "dodge") +
+      scale_fill_manual(values = mycolors) +
+      ggtitle("Mean Trip Fare")
+  })
+  
+  tpc_data <- reactive({
+    d <- ops_data %>%
+      group_by_(input$ops_time_factor, 'company') %>%
+      dplyr::summarise(trips=mean(trips_per_cab))
+    return(d)
+  })
+  output$tpc_chart <- renderPlot({
+    ggplot(tpc_data(), aes_string(x = input$ops_time_factor)) + 
+      geom_bar(aes(y = trips, fill = company), stat="identity", position = "dodge") +
+      scale_fill_manual(values = mycolors) +
+      ggtitle("Mean Trips per Cab")
+  })
 
   
   ###########################################################################################
