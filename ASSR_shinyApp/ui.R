@@ -62,7 +62,7 @@ ui <- dashboardPage(
         tabName = "travelPatterns",
         div(style="width:1200px",
           fluidRow(
-            div(style="display: inline-block",
+            div(style="display: inline-block; margin-top:20px; margin-right:20px",
             selectInput('choice1', 'Time Factor', 
                         choices =  c(`Month` = 'Month',
                                      `Day of Week`='Day_of_Week',
@@ -71,15 +71,15 @@ ui <- dashboardPage(
                                      `Season`='Season'),
                         multiple = FALSE),
             ),
-            div(style="display: inline-block", valueBoxOutput("TripsCount")),
-            div(style="display: inline-block", valueBoxOutput("TripsSD")),
-            div(style="display: inline-block", valueBoxOutput("TotalDistance")),
-            div(style="display: inline-block", valueBoxOutput("DistanceSD")),
+            div(style="display: inline-block; margin-top:25px; margin-right:20px; vertical-align:top", valueBoxOutput("TripsCount")),
+            div(style="display: inline-block; margin-top:25px; margin-right:20px; vertical-align:top", valueBoxOutput("TripsSD")),
+            div(style="display: inline-block; margin-top:25px; margin-right:20px; vertical-align:top", valueBoxOutput("TotalDistance")),
+            div(style="display: inline-block; margin-top:25px; vertical-align:top", valueBoxOutput("DistanceSD")),
           ),
               
           fluidRow(
-            div(style="display: inline-block; width:550px", plotOutput("dynamic_plot", width="100%")),
-            div(style="display: inline-block; width:550px", plotOutput("box_plot", width="100%"))
+            div(style="display: inline-block; margin-top:20px; margin-right:20px; width:500px", plotOutput("dynamic_plot", width="100%")),
+            div(style="display: inline-block; margin-top:20px; width:500px", plotOutput("box_plot", width="100%"))
           ),
           
           fluidRow(
@@ -93,7 +93,7 @@ ui <- dashboardPage(
           ),
           
           fluidRow(
-            div(style="display: inline-block; width:1200px", plotOutput("TwoFactorPlot"))
+            div(style="display: inline-block; width:1000px", plotOutput("TwoFactorPlot"))
           ),
         )
       ),

@@ -149,7 +149,7 @@ server <- function(input, output, session) {
   
   output$TwoFactorPlot <- renderPlot({
     ggplot(multiplot(), aes_string(x=input$choice1,y=input$choice2))+geom_tile(aes(fill=N),color="white",na.rm=TRUE)+
-      scale_fill_gradient(low = "#d8e1cf", high = "#0E3386")+
+      scale_fill_gradient(low = "#FFFFFF", high = "#0E7C7B")+
       guides(fill=guide_legend(title="Total Trips"))+
       theme_bw()+theme_minimal()+
       theme(plot.title = element_text(face = "bold", size = (15)))
