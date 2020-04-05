@@ -162,17 +162,38 @@ ui <- dashboardPage(
       ),
       tabItem(
         tabName = "operations",
-        div(
+        div(style="display:inline-block",
           selectInput(
-            'ops_time_factor', 'Time Factor', 
-            choices =  c(`Month` = 'ops_month',
-                         `Day of Week`='ops_day',
-                         `Time Group`='ops_time_bin',
-                         `Holiday`='ops_hol',
-                         `Season`='ops_season',
-                         `Company` = 'ops_company'),
+            inputId = 'ops_time_factor', label= 'Time Factor', 
+            choices =  c("Month" = 'month',
+                         "Day of week" ='day',
+                         "Time Group" ='time_bin',
+                         "Holiday"='holiday',
+                         "Season" ='season'),
             multiple = FALSE), 
-        )
+        ),
+        div(style="display:inline-block",
+          selectInput(
+            'ops_company', 'Company',
+            choices = c(`All` = 'all',
+                        `Blue Ribbon Taxi Association Inc.` = 'Blue Ribbon Taxi Association Inc.',
+                        `Chicago Carriage Cab Corp` = 'Chicago Carriage Cab Corp',
+                        `Chicago Independents` = 'Chicago Independents',
+                        `Choice Taxi Association` = 'Choice Taxi Association',
+                        `City Service` = 'City Service',
+                        `Flash Cab` = 'Flash Cab',
+                        `Globe Taxi` = 'Globe Taxi',
+                        `Medallion Leasin` = 'Medallion Leasin',
+                        `Star North Management LLC` = 'Star North Management LLC',
+                        `Sun Taxi` = 'Sun Taxi',
+                        `Taxi Affiliation Service Yellow` = 'Taxi Affiliation Service Yellow',
+                        `Taxi Affiliation Services` = 'Taxi Affiliation Services',
+                        `Taxicab Insurance Agency, LLC` = 'Taxicab Insurance Agency, LLC',
+                        `Top Cab Affiliation` = 'Top Cab Affiliation'
+            )
+          )    
+        ),
+        div(style="display: inline-block; width:1200px", plotOutput("downtime_chart", width="100%"))
       ),
       tabItem(
         tabName = "comparison",

@@ -347,8 +347,27 @@ server <- function(input, output, session) {
   #                                     Operations                                          #
   #                                                                                         #
   ###########################################################################################
+  ops_data$company <- as.factor(ops_data$company)
+  ops_data$day <- as.factor(ops_data$day)
+  ops_data$weekday <- as.factor(ops_data$weekday)
+  ops_data$time_bin <- as.factor(ops_data$time_bin)
+  ops_data$month <- as.factor(ops_data$month)
+  ops_data$season <- as.factor(ops_data$season)
+  ops_data$holiday <- as.factor(ops_data$holiday)
+  
+  downtime_data <- reactive({
+    d <- ops_data %>%
+      group_by_(input$ops_time_factor, 'company') %>%
+      dplyr::summarise(downtime=median(median_downtime))
+    return(d)
+  })
+  output$downtime_chart <- renderPlot({
+    ggplot(downtime_data(), aes_string(x = input$ops_time_factor)) + 
+      geom_bar(aes(y = downtime, fill = company), stat="identity", position = "dodge") +
+      scale_fill_manual(values = mycolors) +
+      ggtitle("Median Trip Downtime")
+  })
 
-  # insert darrens code here
   
   ###########################################################################################
   #                                                                                         #
@@ -430,18 +449,4 @@ server <- function(input, output, session) {
                                                                                                  addMarkers(lng = c(centroids_ptrip()$centroid_x,centroids_dtrip()$centroid_x), lat=c(centroids_ptrip()$centroid_y,centroids_dtrip()$centroid_y))})
   
   output$trip_map <- renderLeaflet(leaflet_trip())
-  ops_data <-  read.csv("../data/ops_data.csv")
-  ops_data<- ops_data %>%  mutate (ops_season = fct_relevel(as.factor(season),
-                                                "Spring","Summer",
-                                                "Autumn","Winter"))
-  ops_data %<>% mutate (ops_time_bin = fct_relevel(as.factor(time_bin),
-                                                  "AM Period","Lunch Period",
-                                                  "PM Period","Night"))
-  ops_data %<>% mutate (ops_day = fct_relevel(as.factor(day),
-                                              "Mon","Tue","Wed","Thu",
-                                              "Fri","Sat","Sun"))
-  ops_data %<>% mutate (ops_month= fct_relevel(as.factor(month),
-                                       "Jan","Feb","Mar","Apr",
-                                       "May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"))
-  ops_data$Holiday <-  as.factor(ops_data$holiday)
 }
