@@ -217,10 +217,33 @@ ui <- dashboardPage(
       tabItem(
         tabName = "farePrediction",
         fluidRow(
-          box(
-            width = 16,
-            title = "Fare Prediction",
-            color = "black", ribbon = FALSE, title_side = "top", collapsible = FALSE
+          div(style="display:inline-block;width:250px; margin-right: 20px; vertical-align:top",
+              selectInput("trip_day", "Weekday/weekends",
+                          choices = list('Weekdays', 'Weekend/Holidays') 
+              )),
+          div(style="display:inline-block;width:250px; margin-right: 20px; vertical-align:top",
+              selectInput("trip_time","Time Period",
+                          choices = list('AM Period', 'Lunch Period', 'PM Period', 'Night'))),
+          div(style="display:inline-block;width:250px; margin-right: 20px; vertical-align:top",
+              selectInput("trip_pickup","Pickup Community Area",
+                          choices = community$community)),
+          div(style="display:inline-block;width:250px; vertical-align:top",
+              selectInput("trip_dropoff","Dropoff Community Area",
+                          choices = community$community)
+          )
+        ),
+        fluidRow(
+          column(width = 6,
+            div(style="margin-bottom: 20px",
+              valueBoxOutput("trip_fare")),
+            sliderInput("trip_tip", "Tip Rate %",
+                        min = 0, max = 100,
+                        value = 10),
+            div(style="margin-top: 20px",
+              valueBoxOutput("trip_total"))
+          ),
+          column(width = 6,
+            leafletOutput("trip_map", width="600px", height = "600px")
           )
         )
       )

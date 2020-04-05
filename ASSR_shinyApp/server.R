@@ -25,7 +25,7 @@ library(GISTools)
 library(xts)
 
 #Sean & Jayne's Stuff
-taxi <-  read.csv("../data/taxi_descriptive.csv")
+taxi <-  fread("../data/taxi_descriptive.csv")
 taxi<- taxi %>%  mutate (Season = fct_relevel(as.factor(Season),
                                               "Spring","Summer",
                                               "Autumn","Winter"))
@@ -52,19 +52,6 @@ mycolors <- colorRampPalette(brewer.pal(8, "Set3"))(nb.cols)
 # Define server logic 
 server <- function(input, output, session) {
   
-  # Ridge Plot
-#  companyridge_data <- reactive({
-#    companyridge_data <- fare_data %>% 
-#      filter(company %in% c(input$companyA,input$companyB)) %>%
-#      select(fare,company) 
-#  })
-  
-#  output$fare_ridgeplot <- renderPlot({
-#    ggplot(companyridge_data(), aes(y=1,x=fare,fill=company)) +
-#      geom_density_ridges(alpha=0.5) +
-#      xlim(0,100) +
-#      theme(axis.text=element_text(size=10,), axis.title.y = element_blank(), legend.position = "bottom") 
-#  })
   
   ###########################################################################################
   #                                                                                         #
@@ -382,4 +369,100 @@ server <- function(input, output, session) {
       scale_fill_manual(values = mycolors) +
       ggtitle("Median Trip Downtime")
   })
+
+  
+  ###########################################################################################
+  #                                                                                         #
+  #                                 Fare Prediction                                         #
+  #                                                                                         #
+  ###########################################################################################
+  model_data <- fread("../data/modelling.csv")
+  
+  prediction <- reactive({
+    day <- if (input$trip_day == "Weekdays") {
+              day <- 1
+            }
+            else {
+              day <- 0
+            }
+    
+    time <- if (input$trip_time == "AM Period") {
+              time <- 1
+            }
+            else if (input$trip_time == "Lunch Period"){
+              time <- 2
+            }
+            else if (input$trip_time == "PM Period"){
+              time <- 3
+            }
+            else {
+              time <- 4
+            }
+    
+    pickup_data <- model_data[model_data$pickup_community_area == input$trip_pickup, ]
+    dropoff_data <- pickup_data %>% dplyr::filter(dropoff_community_area == input$trip_dropoff, weekday == day, time_bin == time)
+    if (nrow(dropoff_data) == 0){
+      dropoff_data <- pickup_data %>% dplyr::filter(dropoff_community_area == input$trip_dropoff)
+    } 
+    
+    if (nrow(dropoff_data) == 0){
+      trip_duration <- mean(pickup_data[["duration"]])
+      trip_distance <- mean(pickup_data[["distance_km"]])
+    }
+    
+    if (nrow(dropoff_data) > 0){
+      trip_duration <- mean(dropoff_data[["duration"]])
+      trip_distance <- mean(dropoff_data[["distance_km"]])
+    } 
+
+    trip_data <- data.frame(time_bin=c(time),weekday=c(day),duration=c(trip_duration),distance_km=c(trip_distance))
+    fit <- lm(fare ~ time_bin + weekday + duration + distance_km, data = pickup_data)
+    prediction <- predict(fit,trip_data)
+  })
+  
+  output$trip_fare <- renderValueBox(
+    valueBox(
+      value= paste("$",round(prediction(),2)),
+      subtitle = "Estimated Fare",
+      color="black",
+      size="tiny"
+    )
+  )
+  
+  output$trip_total <- renderValueBox(
+    valueBox(
+      value= paste("$",round(prediction()*(100+input$trip_tip)/100,2)),
+      subtitle = "Total Fare with Tip",
+      color="black",
+      size="tiny"
+    )
+  )
+  
+  centroids_ptrip <- reactive({subset(centroids, community == input$trip_pickup)})
+  centroids_dtrip <- reactive({subset(centroids, community == input$trip_dropoff)})
+  leaflet_trip <- reactive({leaflet(comm_area) %>% addTiles() %>% addPolygons(fillColor = "green",
+                                                                              weight = 2,
+                                                                              opacity = 0.5,
+                                                                              color = "grey",
+                                                                              dashArray = "3",
+                                                                              fillOpacity = 0.8) %>% addLabelOnlyMarkers(data = centroids,
+                                                                                                                         lng = ~centroid_x, lat = ~centroid_y, label = ~area_num_1,
+                                                                                                                         labelOptions = labelOptions(noHide = TRUE, direction = 'center', textOnly = TRUE)) %>%
+                                                                                                 addMarkers(lng = c(centroids_ptrip()$centroid_x,centroids_dtrip()$centroid_x), lat=c(centroids_ptrip()$centroid_y,centroids_dtrip()$centroid_y))})
+  
+  output$trip_map <- renderLeaflet(leaflet_trip())
+  ops_data <-  read.csv("../data/ops_data.csv")
+  ops_data<- ops_data %>%  mutate (ops_season = fct_relevel(as.factor(season),
+                                                "Spring","Summer",
+                                                "Autumn","Winter"))
+  ops_data %<>% mutate (ops_time_bin = fct_relevel(as.factor(time_bin),
+                                                  "AM Period","Lunch Period",
+                                                  "PM Period","Night"))
+  ops_data %<>% mutate (ops_day = fct_relevel(as.factor(day),
+                                              "Mon","Tue","Wed","Thu",
+                                              "Fri","Sat","Sun"))
+  ops_data %<>% mutate (ops_month= fct_relevel(as.factor(month),
+                                       "Jan","Feb","Mar","Apr",
+                                       "May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"))
+  ops_data$Holiday <-  as.factor(ops_data$holiday)
 }
