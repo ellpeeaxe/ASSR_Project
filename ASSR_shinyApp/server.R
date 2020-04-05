@@ -187,7 +187,7 @@ server <- function(input, output, session) {
              bins=c(0,15,30,45,60,75,90,120))
   # create the base map, default will be openstreetmap if not selected 
   # added centroids point as well
-  leaflet_time <- reactive({leaflet(comm_area) %>% addTiles() %>% addPolygons(fillColor = ~pal(m()$average_time),
+  leaflet_time <- reactive({leaflet(comm_area,options = leafletOptions(zoomControl = FALSE)) %>% addTiles() %>% addPolygons(fillColor = ~pal(m()$average_time),
                                                                               weight = 2,
                                                                               opacity = 1,
                                                                               color = "grey",
@@ -200,7 +200,7 @@ server <- function(input, output, session) {
                        na.color = "#00000000",
                        bins=c(0,10,20,30,40,50))
   
-  leaflet_fares <- reactive({leaflet(comm_area) %>% addTiles() %>% addPolygons(fillColor = ~pal_fare(m()$average_fare),
+  leaflet_fares <- reactive({leaflet(comm_area,options = leafletOptions(zoomControl = FALSE)) %>% addTiles() %>% addPolygons(fillColor = ~pal_fare(m()$average_fare),
                                                                                weight = 2,
                                                                                opacity = 1,
                                                                                color = "grey",
@@ -214,7 +214,7 @@ server <- function(input, output, session) {
                         na.color = "#00000000",
                         bins=c(0,1,2,5,10,20,50,100,200,300,500,1000,2000,3000,4000,5000))
   
-  leaflet_trips <- reactive({leaflet(comm_area) %>% addTiles() %>% addPolygons(fillColor = ~pal_trips(m()$avg_trips),
+  leaflet_trips <- reactive({leaflet(comm_area,options = leafletOptions(zoomControl = FALSE)) %>% addTiles() %>% addPolygons(fillColor = ~pal_trips(m()$avg_trips),
                                                                                weight = 2,
                                                                                opacity = 1,
                                                                                color = "grey",
