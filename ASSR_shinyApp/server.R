@@ -25,7 +25,7 @@ library(GISTools)
 library(xts)
 
 #Sean & Jayne's Stuff
-taxi <-  fread("../taxi_descriptive.csv")
+taxi <-  fread("../data/taxi_descriptive.csv")
 taxi<- taxi %>%  mutate (Season = fct_relevel(as.factor(Season),
                                               "Spring","Summer",
                                               "Autumn","Winter"))
@@ -347,7 +347,7 @@ server <- function(input, output, session) {
   #                                     Operations                                          #
   #                                                                                         #
   ###########################################################################################
-<<<<<<< HEAD
+
   # insert darrens code here
   
   ###########################################################################################
@@ -430,7 +430,6 @@ server <- function(input, output, session) {
                                                                                                  addMarkers(lng = c(centroids_ptrip()$centroid_x,centroids_dtrip()$centroid_x), lat=c(centroids_ptrip()$centroid_y,centroids_dtrip()$centroid_y))})
   
   output$trip_map <- renderLeaflet(leaflet_trip())
-=======
   ops_data <-  read.csv("../data/ops_data.csv")
   ops_data<- ops_data %>%  mutate (ops_season = fct_relevel(as.factor(season),
                                                 "Spring","Summer",
@@ -445,5 +444,4 @@ server <- function(input, output, session) {
                                        "Jan","Feb","Mar","Apr",
                                        "May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"))
   ops_data$Holiday <-  as.factor(ops_data$holiday)
->>>>>>> 023fac94a587b9c5d85c7ec36e4cc183663ce339
 }
