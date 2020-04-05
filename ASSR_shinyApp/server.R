@@ -347,6 +347,7 @@ server <- function(input, output, session) {
   #                                     Operations                                          #
   #                                                                                         #
   ###########################################################################################
+  ops_data <- fread('../data/ops_data.csv')
   ops_data$company <- as.factor(ops_data$company)
   ops_data$day <- as.factor(ops_data$day)
   ops_data$weekday <- as.factor(ops_data$weekday)
