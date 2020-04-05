@@ -257,7 +257,7 @@ server <- function(input, output, session) {
                                                                                 opacity = 1,
                                                                                 color = "grey",
                                                                                 dashArray = "3",
-                                                                                fillOpacity = 0.8) %>% leaflet::addLegend("topright", pal2, values=(0:120), title = "Average Speed", labFormat = labelFormat(suffix = " km/h", between = '-'))%>%addLabelOnlyMarkers(data = centroids2,
+                                                                                fillOpacity = 0.8) %>% leaflet::addLegend("bottomleft", pal2, values=(0:120), title = "Average Speed", labFormat = labelFormat(suffix = " km/h", between = '-'))%>%addLabelOnlyMarkers(data = centroids2,
                                                                                                                                                                                                                                                                      lng = ~centroid_x, lat = ~centroid_y, label = ~area_num_1,
                                                                                                                                                                                                                                                                      labelOptions = labelOptions(noHide = TRUE, direction = 'center', textOnly = TRUE))})
   #trips across time 
@@ -271,7 +271,7 @@ server <- function(input, output, session) {
                                                                                 opacity = 1,
                                                                                 color = "grey",
                                                                                 dashArray = "3",
-                                                                                fillOpacity = 0.8) %>% leaflet::addLegend("topright", pal_trips2, values = (0:2000),  title = "Average Trips Taken", labFormat = labelFormat(suffix = ' trips', between = '-'))%>%addLabelOnlyMarkers(data = centroids2,
+                                                                                fillOpacity = 0.8) %>% leaflet::addLegend("bottomleft", pal_trips2, values = (0:2000),  title = "Average Trips Taken", labFormat = labelFormat(suffix = ' trips', between = '-'))%>%addLabelOnlyMarkers(data = centroids2,
                                                                                                                                                                                                                                                                                       lng = ~centroid_x, lat = ~centroid_y, label = ~area_num_1,
                                                                                                                                                                                                                                                                                       labelOptions = labelOptions(noHide = TRUE, direction = 'center', textOnly = TRUE))})
   
@@ -311,7 +311,7 @@ server <- function(input, output, session) {
                                                                                  opacity = 1,
                                                                                  color = "grey",
                                                                                  dashArray = "3",
-                                                                                 fillOpacity = 0.8) %>% leaflet::addLegend("topright", pal3, values=(0:120), title = "Average Speed", labFormat = labelFormat(suffix = " km/h", between = '-'))%>%addLabelOnlyMarkers(data = centroids3,
+                                                                                 fillOpacity = 0.8) %>% leaflet::addLegend("bottomleft", pal3, values=(0:120), title = "Average Speed", labFormat = labelFormat(suffix = " km/h", between = '-'))%>%addLabelOnlyMarkers(data = centroids3,
                                                                                                                                                                                                                                                                       lng = ~centroid_x, lat = ~centroid_y, label = ~area_num_1,
                                                                                                                                                                                                                                                                       labelOptions = labelOptions(noHide = TRUE, direction = 'center', textOnly = TRUE))})
   #trips across time 
@@ -325,7 +325,7 @@ server <- function(input, output, session) {
                                                                                  opacity = 1,
                                                                                  color = "grey",
                                                                                  dashArray = "3",
-                                                                                 fillOpacity = 0.8) %>% leaflet::addLegend("topright", pal_trips3, values = (0:2000),  title = "Average Trips Taken", labFormat = labelFormat(suffix = ' trips', between = '-'))%>%addLabelOnlyMarkers(data = centroids3,
+                                                                                 fillOpacity = 0.8) %>% leaflet::addLegend("bottomleft", pal_trips3, values = (0:2000),  title = "Average Trips Taken", labFormat = labelFormat(suffix = ' trips', between = '-'))%>%addLabelOnlyMarkers(data = centroids3,
                                                                                                                                                                                                                                                                                        lng = ~centroid_x, lat = ~centroid_y, label = ~area_num_1,
                                                                                                                                                                                                                                                                                        labelOptions = labelOptions(noHide = TRUE, direction = 'center', textOnly = TRUE))})
   

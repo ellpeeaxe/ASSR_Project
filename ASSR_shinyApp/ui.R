@@ -100,7 +100,7 @@ ui <- dashboardPage(
       tabItem(
         tabName = "originDestination",
         div(
-          div(
+          div(style="margin-top:20px;",
             h4("This dashboard shows the various aspects of Chicago taxi trips in 2019 (time, mileage etc) for an origin. Choose the following to view the travel patterns."),
             selectInput(
               inputId = 'ODSelector',
@@ -115,20 +115,23 @@ ui <- dashboardPage(
           div(
             conditionalPanel(
               condition = "input.ODSelector == 'OToD'",
-              div(style="display:inline-block;width:250px; vertical-align:top",
+              div(style="display:inline-block;width:250px; margin-right:20px; vertical-align:top",
                  selectInput("pickup","Pickup Community Area",
-                              choices = community$community),
+                              choices = community$community)),
+              div(style="display:inline-block;width:250px; margin-right:20px;vertical-align:top",
                  selectInput("cal", "Weekday/weekends",
                              choices = list('Weekdays', 'Weekend/Holidays') 
-                             ),
+                             )),
+              div(style="display:inline-block;width:250px; margin-right:20px;vertical-align:top",
                  selectInput("time","Time Period",
-                             choices = list('AM Period', 'Lunch Period', 'PM Period', 'Night')),
+                             choices = list('AM Period', 'Lunch Period', 'PM Period', 'Night'))),
+              div(style="display:inline-block;width:250px; margin-right:20px;vertical-align:top",
                  selectInput("ind","Travel Indicators",
-                             choices = list("Average Trips","Average Time", "Average Fare")),
+                             choices = list("Average Trips","Average Time", "Average Fare"))
                ),
               div(style="display:inline-block;width:750px",
                      h4("If the destination is empty on the map, it could be due to no trips or extreme values of the travel indicators."),
-                     div(style="display:inline-block;width:1000px",leafletOutput("map", width="900px", height = "600px"))
+                     div(style="display:inline-block;width:1100px",leafletOutput("map", width="900px", height = "600px"))
               )
           ),
             conditionalPanel(
@@ -150,10 +153,19 @@ ui <- dashboardPage(
                 )
               ),
               fluidRow(
-                br(),br(),br(),
-                div(style="display:inline-block;width:1200px",
-                    div(style="display:inline-block;width:575px",leafletOutput("map2", width="500px", height = "600px")),
-                    div(style="display:inline-block;width:575px",leafletOutput("map3", width="500px", height = "600px"))
+                div(style="display:inline-block; margin-top:20px",
+                  column(
+                    style="display:inline-block",
+                    width=6,
+                    h3("Origins"),
+                    div(style="display:inline-block;width:500px",leafletOutput("map2", width="450px", height = "600px"))
+                  ),
+                  column(
+                    style="display:inline-block",
+                    width=6,
+                    h3("Destinations"),
+                    div(style="display:inline-block;width:500px",leafletOutput("map3", width="450px", height = "600px"))
+                  )
                 )
               )
             )
@@ -234,12 +246,13 @@ ui <- dashboardPage(
         ),
         fluidRow(
           column(width = 6,
-            div(style="margin-bottom: 20px",
+            div(style="margin-bottom: 20px; width: 350px",
               valueBoxOutput("trip_fare")),
-            sliderInput("trip_tip", "Tip Rate %",
-                        min = 0, max = 100,
-                        value = 10),
-            div(style="margin-top: 20px",
+            div(style="margin-bottom: 20px; width: 350px",
+              sliderInput("trip_tip", "Tip Rate %",
+                          min = 0, max = 100,
+                          value = 10)),
+            div(style="width: 350px",
               valueBoxOutput("trip_total"))
           ),
           column(width = 6,
