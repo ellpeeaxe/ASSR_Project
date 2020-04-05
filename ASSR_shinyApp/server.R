@@ -192,7 +192,7 @@ server <- function(input, output, session) {
                                                                               opacity = 1,
                                                                               color = "grey",
                                                                               dashArray = "3",
-                                                                              fillOpacity = 0.8) %>% leaflet::addLegend("topright", pal, values=(0:120), title = "Average Time Taken", labFormat = labelFormat(suffix = " mins", between = '-'))%>% addLabelOnlyMarkers(data = centroids,
+                                                                              fillOpacity = 0.8) %>% leaflet::addLegend("bottomleft", pal, values=(0:120), title = "Average Time Taken", labFormat = labelFormat(suffix = " mins", between = '-'))%>% addLabelOnlyMarkers(data = centroids,
                                                                                                                                                                                                                                                                lng = ~centroid_x, lat = ~centroid_y, label = ~area_num_1,
                                                                                                                                                                                                                                                                labelOptions = labelOptions(noHide = TRUE, direction = 'center', textOnly = TRUE)) %>% addMarkers(lng = centroids_test()$centroid_x, lat=centroids_test()$centroid_y)})
   pal_fare <- colorBin(palette = rev(brewer.pal(6,"RdYlGn")),
@@ -205,21 +205,21 @@ server <- function(input, output, session) {
                                                                                opacity = 1,
                                                                                color = "grey",
                                                                                dashArray = "3",
-                                                                               fillOpacity = 0.8) %>% leaflet::addLegend("topright", pal_fare, values = (0:50), title = "Average Amount Paid", labFormat = labelFormat(prefix = "$", between = '- $'))%>% addLabelOnlyMarkers(data = centroids,
+                                                                               fillOpacity = 0.8) %>% leaflet::addLegend("bottomleft", pal_fare, values = (0:50), title = "Average Amount Paid", labFormat = labelFormat(prefix = "$", between = '- $'))%>% addLabelOnlyMarkers(data = centroids,
                                                                                                                                                                                                                                                                               lng = ~centroid_x, lat = ~centroid_y, label = ~area_num_1,
                                                                                                                                                                                                                                                                               labelOptions = labelOptions(noHide = TRUE, direction = 'center', textOnly = TRUE)) %>% addMarkers(lng = centroids_test()$centroid_x, lat=centroids_test()$centroid_y)})
   
   pal_trips <- colorBin(palette = rev(brewer.pal(15,"RdYlGn")),
                         domain = c(0,5000),
                         na.color = "#00000000",
-                        bins=c(0,1,2,5,10,20,50,100,200,300,500,1000,2000,3000,4000,5000))
+                        bins=c(0,1,2,5,10,20,50,100,200,300,500,1000,2000,3000,4000,5000)) 
   
   leaflet_trips <- reactive({leaflet(comm_area,options = leafletOptions(zoomControl = FALSE)) %>% addTiles() %>% addPolygons(fillColor = ~pal_trips(m()$avg_trips),
                                                                                weight = 2,
                                                                                opacity = 1,
                                                                                color = "grey",
                                                                                dashArray = "3",
-                                                                               fillOpacity = 0.8) %>% leaflet::addLegend("topright", pal_trips, values = (0:5000),  title = "Average Trips Taken", labFormat = labelFormat(suffix = 'trips', between = '-'))%>% addLabelOnlyMarkers(data = centroids,
+                                                                               fillOpacity = 0.8) %>% leaflet::addLegend("bottomleft", pal_trips, values = (0:5000),  title = "Average Trips Taken", labFormat = labelFormat(suffix = 'trips', between = '-'))%>% addLabelOnlyMarkers(data = centroids,
                                                                                                                                                                                                                                                                                     lng = ~centroid_x, lat = ~centroid_y, label = ~area_num_1,
                                                                                                                                                                                                                                                                                     labelOptions = labelOptions(noHide = TRUE, direction = 'center', textOnly = TRUE)) %>% addMarkers(lng = centroids_test()$centroid_x, lat=centroids_test()$centroid_y)})
   leaflet_selection <-reactive({
@@ -252,7 +252,7 @@ server <- function(input, output, session) {
              na.color = "#00000000",
              bins=c(0,20,30,40,50,110))
 
-  leaflet_speed2 <- reactive({leaflet(comm_area2) %>% addTiles() %>% addPolygons(fillColor = ~pal2(m2()$average_speed),
+  leaflet_speed2 <- reactive({leaflet(comm_area2,options = leafletOptions(zoomControl = FALSE)) %>% addTiles() %>% addPolygons(fillColor = ~pal2(m2()$average_speed),
                                                                                 weight = 2,
                                                                                 opacity = 1,
                                                                                 color = "grey",
@@ -266,7 +266,7 @@ server <- function(input, output, session) {
                          na.color = "#00000000",
                          bins=c(0,1,2,5,10, 50,100,500,1000,2000,2500,3000,3500))
   
-  leaflet_trips2 <- reactive({leaflet(comm_area2) %>% addTiles() %>% addPolygons(fillColor = ~pal_trips2(m2()$avg_trips),
+  leaflet_trips2 <- reactive({leaflet(comm_area2,options = leafletOptions(zoomControl = FALSE)) %>% addTiles() %>% addPolygons(fillColor = ~pal_trips2(m2()$avg_trips),
                                                                                 weight = 2,
                                                                                 opacity = 1,
                                                                                 color = "grey",
@@ -306,7 +306,7 @@ server <- function(input, output, session) {
              bins=c(0,20,30,40,50,110))
   # create the base map, default will be openstreetmap if not selected 
   # added centroids3 point as well
-  leaflet_speed3 <- reactive({leaflet(comm_area3) %>% addTiles() %>% addPolygons(fillColor = ~pal3(m3()$average_speed),
+  leaflet_speed3 <- reactive({leaflet(comm_area3,options = leafletOptions(zoomControl = FALSE)) %>% addTiles() %>% addPolygons(fillColor = ~pal3(m3()$average_speed),
                                                                                  weight = 2,
                                                                                  opacity = 1,
                                                                                  color = "grey",
@@ -320,7 +320,7 @@ server <- function(input, output, session) {
                          na.color = "#00000000",
                          bins=c(0,1,2,5,10, 50,100,500,1000,2000,2500))
   
-  leaflet_trips3 <- reactive({leaflet(comm_area3) %>% addTiles() %>% addPolygons(fillColor = ~pal_trips3(m3()$avg_trips),
+  leaflet_trips3 <- reactive({leaflet(comm_area3,options = leafletOptions(zoomControl = FALSE)) %>% addTiles() %>% addPolygons(fillColor = ~pal_trips3(m3()$avg_trips),
                                                                                  weight = 2,
                                                                                  opacity = 1,
                                                                                  color = "grey",
@@ -465,12 +465,12 @@ server <- function(input, output, session) {
   
   centroids_ptrip <- reactive({subset(centroids, community == input$trip_pickup)})
   centroids_dtrip <- reactive({subset(centroids, community == input$trip_dropoff)})
-  leaflet_trip <- reactive({leaflet(comm_area) %>% addTiles() %>% addPolygons(fillColor = "green",
+  leaflet_trip <- reactive({leaflet(comm_area,options = leafletOptions(zoomControl = FALSE)) %>% addTiles() %>% addPolygons(fillColor = "#81B29A",
                                                                               weight = 2,
                                                                               opacity = 0.5,
                                                                               color = "grey",
                                                                               dashArray = "3",
-                                                                              fillOpacity = 0.8) %>% addLabelOnlyMarkers(data = centroids,
+                                                                              fillOpacity = 0.7) %>% addLabelOnlyMarkers(data = centroids,
                                                                                                                          lng = ~centroid_x, lat = ~centroid_y, label = ~area_num_1,
                                                                                                                          labelOptions = labelOptions(noHide = TRUE, direction = 'center', textOnly = TRUE)) %>%
                                                                                                  addMarkers(lng = c(centroids_ptrip()$centroid_x,centroids_dtrip()$centroid_x), lat=c(centroids_ptrip()$centroid_y,centroids_dtrip()$centroid_y))})
