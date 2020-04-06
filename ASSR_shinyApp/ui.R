@@ -94,6 +94,7 @@ ui <- dashboardPage(
                                      `Time Group`='time_indicator',
                                      `Holiday`='Holiday',
                                      `Season`='Season'),
+                        selected = "Day_of_Week",
                         multiple = FALSE)
           ),
           
