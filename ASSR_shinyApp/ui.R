@@ -35,8 +35,13 @@ usePackage("dbplyr")
 usePackage("dygraphs")
 usePackage("xts")
 usePackage("forcats")
+usePackage("png")
+usePackage("base64enc")
 
 community <- fread("../data/community area.csv")
+hypothesis_data <- read.csv("../data/hypothesis.csv")
+anova_img <- base64enc::dataURI(file="../data/anova.png", mime="image/png")
+rank_img <- base64enc::dataURI(file="../data/anova_rank.png", mime="image/png")
 
 ###########################################################################################
 #                                                                                         #
@@ -89,6 +94,7 @@ ui <- dashboardPage(
                                      `Time Group`='time_indicator',
                                      `Holiday`='Holiday',
                                      `Season`='Season'),
+                        selected = "Day_of_Week",
                         multiple = FALSE)
           ),
           
@@ -101,12 +107,12 @@ ui <- dashboardPage(
         tabName = "originDestination",
         div(
           div(style="margin-top:20px;",
-            h4("This dashboard shows the various aspects of Chicago taxi trips in 2019 (time, mileage etc) for an origin. Choose the following to view the travel patterns."),
+            h4("This dashboard shows the various aspects of Chicago taxi trips in 2019 (origin to destination, across time etc). Choose the following to view the travel patterns."),
             selectInput(
               inputId = 'ODSelector',
               label = "View as:",
-              c("Origin to Destination" = "OToD",
-                "Origin and Destination" = "OAndD"
+              c("From Origin to Destination" = "OToD",
+                "Origin and Destination Across Time" = "OAndD"
               ),
               selected="OtoD"
             )
@@ -120,11 +126,11 @@ ui <- dashboardPage(
                               choices = community$community)),
               div(style="display:inline-block;width:250px; margin-right:20px;vertical-align:top",
                  selectInput("cal", "Weekday/weekends",
-                             choices = list('Weekdays', 'Weekend/Holidays') 
+                             choices = list('All','Weekdays', 'Weekend/Holidays') 
                              )),
               div(style="display:inline-block;width:250px; margin-right:20px;vertical-align:top",
                  selectInput("time","Time Period",
-                             choices = list('AM Period', 'Lunch Period', 'PM Period', 'Night'))),
+                             choices = list('All','AM Period', 'Lunch Period', 'PM Period', 'Night'))),
               div(style="display:inline-block;width:250px; margin-right:20px;vertical-align:top",
                  selectInput("ind","Travel Indicators",
                              choices = list("Average Trips","Average Time", "Average Fare"))
@@ -211,21 +217,16 @@ ui <- dashboardPage(
       ),
       tabItem(
         tabName = "comparison",
-      #  fluidRow(
-      #    selectInput(inputId = "companyA", label = "Select first company:", 
-      #                    choices = levels(as.factor(fare_data$company)), selected = "Top Cab Affiliation"),
-      #    div(style="display: inline-block; width: 300px; margin-left: 50px",
-      #        selectInput(inputId = "companyB", label = "Select second company:",
-      #                    choices = levels(as.factor(fare_data$company)), selected = "Taxi Affiliation Services")
-       #   )
-      #  ),
+        div(style="margin-top:20px;",h3("ANOVA on Mean Daily Trips per Taxi by Company (Top 9)")),
         fluidRow(
-          box(
-            width = 16,
-            title = "Fare Distributions",
-            color = "black", ribbon = FALSE, title_side = "top", collapsible = FALSE,
-           # plotOutput("fare_ridgeplot", height = 270)
-          )
+          div(style="display: inline-block; margin-bottom:30px;margin-top:30px;margin-right:30px;height: 100px; ",
+              list(img(src=anova_img,height='100px'))),
+          div(style="display: inline-block; margin-bottom:30px;height: 200px; ",
+              list(img(src=rank_img,height='200px')))
+          ),
+        fluidRow(
+          div(style="margin-bottom:30px;",h3("Tukey Multiple pairwise Comparisons")),
+          DT::dataTableOutput("tukey")
         )
       ),
       tabItem(
@@ -248,6 +249,8 @@ ui <- dashboardPage(
         ),
         fluidRow(
           column(width = 6,
+           div(style="margin-bottom: 20px; width: 350px",
+               valueBoxOutput("trip_duration")),
             div(style="margin-bottom: 20px; width: 350px",
               valueBoxOutput("trip_fare")),
             div(style="margin-bottom: 20px; width: 350px",

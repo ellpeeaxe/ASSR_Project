@@ -1,0 +1,37 @@
+Company_1,Company_2,Diff,Lower,Upper,P_Adj
+Chicago Carriage Cab Corp,Blue Ribbon Taxi Association Inc.,6.1481293,4.727354,7.568904628,0
+Choice Taxi Association,Blue Ribbon Taxi Association Inc.,3.08353885,1.4129542,4.754123552,0.0000004
+City Service,Blue Ribbon Taxi Association Inc.,5.10190791,3.614933,6.588882826,0
+Flash Cab,Blue Ribbon Taxi Association Inc.,4.90628968,3.5206688,6.291910527,0
+Medallion Leasin,Blue Ribbon Taxi Association Inc.,6.60632254,5.1066847,8.105960434,0
+Star North Management LLC,Blue Ribbon Taxi Association Inc.,4.86022584,3.3372642,6.383187454,0
+Sun Taxi,Blue Ribbon Taxi Association Inc.,4.9847084,3.5117335,6.457683293,0
+Taxi Affiliation Services,Blue Ribbon Taxi Association Inc.,4.13599439,2.7762609,5.495727925,0
+Choice Taxi Association,Chicago Carriage Cab Corp,-3.06459045,-4.2982228,-1.83095812,0
+City Service,Chicago Carriage Cab Corp,-1.04622139,-2.0168346,-0.07560824,0.023469
+Flash Cab,Chicago Carriage Cab Corp,-1.24183962,-2.0486485,-0.435030714,0.0000645
+Medallion Leasin,Chicago Carriage Cab Corp,0.45819324,-0.5317104,1.448096919,0.8837927
+Star North Management LLC,Chicago Carriage Cab Corp,-1.28790347,-2.3127974,-0.263009532,0.0031434
+Sun Taxi,Chicago Carriage Cab Corp,-1.1634209,-2.112447,-0.214394813,0.0045574
+Taxi Affiliation Services,Chicago Carriage Cab Corp,-2.01213491,-2.7736274,-1.25064245,0
+City Service,Choice Taxi Association,2.01836905,0.7090408,3.327697353,0.0000623
+Flash Cab,Choice Taxi Association,1.82275083,0.629775,3.015726651,0.0000766
+Medallion Leasin,Choice Taxi Association,3.52278369,2.1990919,4.846475493,0
+Star North Management LLC,Choice Taxi Association,1.77668698,0.4266284,3.126745602,0.0014885
+Sun Taxi,Choice Taxi Association,1.90116955,0.6077627,3.194576373,0.0001805
+Taxi Affiliation Services,Choice Taxi Association,1.05245554,-0.110352,2.215263118,0.112941
+Flash Cab,City Service,-0.19561822,-1.114004,0.722767583,0.9992077
+Medallion Leasin,City Service,1.50441464,0.4216399,2.587189392,0.000561
+Star North Management LLC,City Service,-0.24168207,-1.3565361,0.873171936,0.9990992
+Sun Taxi,City Service,-0.1171995,-1.162734,0.928334997,0.999994
+Taxi Affiliation Services,City Service,-0.96591351,-1.8447552,-0.087071864,0.0188598
+Medallion Leasin,Flash Cab,1.70003286,0.7612827,2.638783027,0.0000008
+Star North Management LLC,Flash Cab,-0.04606385,-1.0216407,0.929512988,1
+Sun Taxi,Flash Cab,0.07841872,-0.817122,0.973959393,0.9999991
+Taxi Affiliation Services,Flash Cab,-0.77029529,-1.4639907,-0.076599859,0.0167374
+Star North Management LLC,Medallion Leasin,-1.74609671,-2.8777852,-0.614408212,0.000061
+Sun Taxi,Medallion Leasin,-1.62161414,-2.685081,-0.558147269,0.0000802
+Taxi Affiliation Services,Medallion Leasin,-2.47032815,-3.3704293,-1.570227024,0
+Sun Taxi,Star North Management LLC,0.12448257,-0.9716288,1.220593907,0.9999934
+Taxi Affiliation Services,Star North Management LLC,-0.72423144,-1.6626771,0.214214252,0.2867719
+Taxi Affiliation Services,Sun Taxi,-0.84871401,-1.7036545,0.006226492,0.0534523

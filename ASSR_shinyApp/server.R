@@ -163,7 +163,7 @@ server <- function(input, output, session) {
   ###########################################################################################
   #Weiji's Stuff
   community <- fread("../data/community area.csv")
-  taxi_od <- fread('../data/trips for R split.csv') 
+  taxi_od <- fread('../data/trips for R split all.csv') 
   taxi_across <- fread('../data/trips across time origin.csv')
   taxi_across2 <- fread('../data/trips across time destination.csv')
   
@@ -422,6 +422,49 @@ server <- function(input, output, session) {
       ggtitle("Mean Trips per Cab")
   })
 
+  ###########################################################################################
+  #                                                                                         #
+  #                             Performance Comparison                                      #
+  #                                                                                         #
+  ###########################################################################################
+  tukey_data <- read.csv("../data/TuKey.csv",stringsAsFactors = F)
+  
+  output$tukey <- DT::renderDataTable(
+    tukey_data,
+    options = list(pageLength = 36)
+  )
+  
+  # z <- reactive({
+  #   company1 <- input$company1
+  #   company2 <- input$company2
+  #   metric <- input$comp_metric
+  #   xbar <- paste(metric,"_mean",sep="")
+  #   sd <- paste(metric,"_std",sep="")
+  #   
+  #   company1_data <- hypothesis_data %>% dplyr::filter(company == company1)
+  #   company2_data <- hypothesis_data %>% dplyr::filter(company == company2)
+  #   
+  #   n1 <- company1_data$count
+  #   n2 <- company2_data$count
+  #   
+  #   xbar1 <- company1_data[[xbar]]
+  #   xbar2 <- company2_data[[xbar]]
+  #   
+  #   sd1 <- company1_data[[sd]] 
+  #   sd2 <- company2_data[[sd]]
+  #   
+  #   z <- (xbar1-xbar2)/sqrt(sd1^2/n1+sd2^2/n2)
+  #   z
+  # })
+  # 
+  # output$Z_value <- renderValueBox(
+  #   valueBox(
+  #     value= round(z(),2),
+  #     subtitle = "Z-Value",
+  #     color="black",
+  #     size="tiny"
+  #   )
+  # )
   
   ###########################################################################################
   #                                                                                         #
@@ -469,12 +512,21 @@ server <- function(input, output, session) {
 
     trip_data <- data.frame(time_bin=c(time),weekday=c(day),duration=c(trip_duration),distance_km=c(trip_distance))
     fit <- lm(fare ~ time_bin + weekday + duration + distance_km, data = pickup_data)
-    prediction <- predict(fit,trip_data)
+    prediction <- c(predict(fit,trip_data),trip_duration)
   })
+  
+  output$trip_duration <- renderValueBox(
+    valueBox(
+      value= round(prediction()[[2]]/60,0),
+      subtitle = "Estimated Minutes",
+      color="black",
+      size="tiny"
+    )
+  )
   
   output$trip_fare <- renderValueBox(
     valueBox(
-      value= paste("$",round(prediction(),2)),
+      value= paste("$",round(prediction()[[1]],2)),
       subtitle = "Estimated Fare",
       color="black",
       size="tiny"
@@ -483,7 +535,7 @@ server <- function(input, output, session) {
   
   output$trip_total <- renderValueBox(
     valueBox(
-      value= paste("$",round(prediction()*(100+input$trip_tip)/100,2)),
+      value= paste("$",round(prediction()[[1]]*(100+input$trip_tip)/100,2)),
       subtitle = "Total Fare with Tip",
       color="black",
       size="tiny"
