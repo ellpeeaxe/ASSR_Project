@@ -163,7 +163,7 @@ server <- function(input, output, session) {
   ###########################################################################################
   #Weiji's Stuff
   community <- fread("../data/community area.csv")
-  taxi_od <- fread('../data/trips for R split.csv') 
+  taxi_od <- fread('../data/trips for R split all.csv') 
   taxi_across <- fread('../data/trips across time origin.csv')
   taxi_across2 <- fread('../data/trips across time destination.csv')
   
@@ -400,39 +400,44 @@ server <- function(input, output, session) {
   #                             Performance Comparison                                      #
   #                                                                                         #
   ###########################################################################################
-  hypothesis_data <- fread("../data/hypothesis.csv")
+  tukey_data <- read.csv("../data/TuKey.csv",stringsAsFactors = F)
   
-  z <- reactive({
-    company1 <- input$company1
-    company2 <- input$company2
-    metric <- input$comp_metric
-    xbar <- paste(metric,"_mean",sep="")
-    sd <- paste(metric,"_std",sep="")
-    
-    company1_data <- hypothesis_data %>% dplyr::filter(company == company1)
-    company2_data <- hypothesis_data %>% dplyr::filter(company == company2)
-    
-    n1 <- company1_data$count
-    n2 <- company2_data$count
-    
-    xbar1 <- company1_data[[xbar]]
-    xbar2 <- company2_data[[xbar]]
-    
-    sd1 <- company1_data[[sd]] 
-    sd2 <- company2_data[[sd]]
-    
-    z <- (xbar1-xbar2)/sqrt(sd1^2/n1+sd2^2/n2)
-    z
-  })
-  
-  output$Z_value <- renderValueBox(
-    valueBox(
-      value= round(z(),2),
-      subtitle = "Z-Value",
-      color="black",
-      size="tiny"
-    )
+  output$tukey <- DT::renderDataTable(
+    tukey_data,
+    options = list(pageLength = 36)
   )
+  
+  # z <- reactive({
+  #   company1 <- input$company1
+  #   company2 <- input$company2
+  #   metric <- input$comp_metric
+  #   xbar <- paste(metric,"_mean",sep="")
+  #   sd <- paste(metric,"_std",sep="")
+  #   
+  #   company1_data <- hypothesis_data %>% dplyr::filter(company == company1)
+  #   company2_data <- hypothesis_data %>% dplyr::filter(company == company2)
+  #   
+  #   n1 <- company1_data$count
+  #   n2 <- company2_data$count
+  #   
+  #   xbar1 <- company1_data[[xbar]]
+  #   xbar2 <- company2_data[[xbar]]
+  #   
+  #   sd1 <- company1_data[[sd]] 
+  #   sd2 <- company2_data[[sd]]
+  #   
+  #   z <- (xbar1-xbar2)/sqrt(sd1^2/n1+sd2^2/n2)
+  #   z
+  # })
+  # 
+  # output$Z_value <- renderValueBox(
+  #   valueBox(
+  #     value= round(z(),2),
+  #     subtitle = "Z-Value",
+  #     color="black",
+  #     size="tiny"
+  #   )
+  # )
   
   ###########################################################################################
   #                                                                                         #
