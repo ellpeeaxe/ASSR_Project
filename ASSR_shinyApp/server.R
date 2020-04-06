@@ -347,14 +347,25 @@ server <- function(input, output, session) {
   #                                     Operations                                          #
   #                                                                                         #
   ###########################################################################################
-  ops_data <- fread('../data/ops_data.csv')
-  ops_data$company <- as.factor(ops_data$company)
-  ops_data$day <- as.factor(ops_data$day)
-  ops_data$weekday <- as.factor(ops_data$weekday)
-  ops_data$time_bin <- as.factor(ops_data$time_bin)
-  ops_data$month <- as.factor(ops_data$month)
-  ops_data$season <- as.factor(ops_data$season)
-  ops_data$holiday <- as.factor(ops_data$holiday)
+  ops_data <- fread('../data/ops_data2.csv')
+  ops_month <- fread('../data/ops_month.csv')
+  ops_hol <- fread('../data/ops_hol.csv')
+  ops_season <- fread('../data/ops_season.csv')
+  ops_day <- fread('../data/ops_day.csv')
+  
+  
+  # ops_data$company <- as.factor(ops_data$company)
+  # ops_data$day <- as.factor(ops_data$day)
+  # ops_data$weekday <- as.factor(ops_data$weekday)
+  # ops_data$time_bin <- as.factor(ops_data$time_bin)
+  # ops_data$month <- as.factor(ops_data$month)
+  # ops_data$holiday <- as.factor(ops_data$holiday)
+  
+  ops_data <- ops_data %>%  mutate (season = fct_relevel(as.factor(season),
+                                                "Spring","Summer",
+                                                "Autumn","Winter"))
+  
+  ops_pal <- colorRampPalette(brewer.pal(14, "Set1"))(14)
   
   downtime_data <- reactive({
     d <- ops_data %>%
@@ -365,7 +376,7 @@ server <- function(input, output, session) {
   output$downtime_chart <- renderPlot({
     ggplot(downtime_data(), aes_string(x = input$ops_time_factor)) + 
       geom_bar(aes(y = downtime, fill = company), stat="identity", position = "dodge") +
-      scale_fill_manual(values = mycolors) +
+      scale_fill_manual(values = ops_pal) +
       ggtitle("Median Trip Downtime")
   })
   
@@ -378,20 +389,36 @@ server <- function(input, output, session) {
   output$earnings_chart <- renderPlot({
     ggplot(earnings_data(), aes_string(x = input$ops_time_factor)) + 
       geom_bar(aes(y = fare, fill = company), stat="identity", position = "dodge") +
-      scale_fill_manual(values = mycolors) +
+      scale_fill_manual(values = ops_pal) +
       ggtitle("Mean Trip Fare")
   })
   
   tpc_data <- reactive({
-    d <- ops_data %>%
+    if (input$ops_time_factor == "month") {
+      data <- ops_month
+    }
+    else if (input$ops_time_factor == "day") {
+      data <- ops_day
+    }
+    else if (input$ops_time_factor == "holiday") {
+      data <- ops_hol
+    }
+    else if (input$ops_time_factor == "season") {
+      data <- ops_season
+    }
+    else {
+      data <- ops_data
+    }
+    d <- data %>%
       group_by_(input$ops_time_factor, 'company') %>%
       dplyr::summarise(trips=mean(trips_per_cab))
     return(d)
   })
+  
   output$tpc_chart <- renderPlot({
     ggplot(tpc_data(), aes_string(x = input$ops_time_factor)) + 
       geom_bar(aes(y = trips, fill = company), stat="identity", position = "dodge") +
-      scale_fill_manual(values = mycolors) +
+      scale_fill_manual(values = ops_pal) +
       ggtitle("Mean Trips per Cab")
   })
 
