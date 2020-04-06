@@ -353,17 +353,30 @@ server <- function(input, output, session) {
   ops_season <- fread('../data/ops_season.csv')
   ops_day <- fread('../data/ops_day.csv')
   
+  ops_data$company <- as.factor(ops_data$company)
+  ops_data$day <- as.factor(ops_data$day)
+  ops_data$time_bin <- as.factor(ops_data$time_bin)
+  ops_data$month <- as.factor(ops_data$month)
+  ops_data$holiday <- as.factor(ops_data$holiday)
   
-  # ops_data$company <- as.factor(ops_data$company)
-  # ops_data$day <- as.factor(ops_data$day)
-  # ops_data$weekday <- as.factor(ops_data$weekday)
-  # ops_data$time_bin <- as.factor(ops_data$time_bin)
-  # ops_data$month <- as.factor(ops_data$month)
-  # ops_data$holiday <- as.factor(ops_data$holiday)
+  ops_month$company <- as.factor(ops_month$company)
+  ops_month$month <- as.factor(ops_month$month)
+  
+  ops_hol$company <- as.factor(ops_hol$company)
+  ops_hol$holiday <- as.factor(ops_hol$holiday)
+  
+  ops_season$company <- as.factor(ops_season$company)
+  
+  ops_day$company <- as.factor(ops_day$company)
+  ops_day$day <- as.factor(ops_day$day)
   
   ops_data <- ops_data %>%  mutate (season = fct_relevel(as.factor(season),
                                                 "Spring","Summer",
                                                 "Autumn","Winter"))
+  
+  ops_season <- ops_season %>%  mutate (season = fct_relevel(as.factor(season),
+                                                         "Spring","Summer",
+                                                         "Autumn","Winter"))
   
   ops_pal <- colorRampPalette(brewer.pal(14, "Set1"))(14)
   
