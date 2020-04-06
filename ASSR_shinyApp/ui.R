@@ -37,6 +37,7 @@ usePackage("xts")
 usePackage("forcats")
 
 community <- fread("../data/community area.csv")
+hypothesis_data <- read.csv("../data/hypothesis.csv")
 
 ###########################################################################################
 #                                                                                         #
@@ -211,21 +212,23 @@ ui <- dashboardPage(
       ),
       tabItem(
         tabName = "comparison",
-      #  fluidRow(
-      #    selectInput(inputId = "companyA", label = "Select first company:", 
-      #                    choices = levels(as.factor(fare_data$company)), selected = "Top Cab Affiliation"),
-      #    div(style="display: inline-block; width: 300px; margin-left: 50px",
-      #        selectInput(inputId = "companyB", label = "Select second company:",
-      #                    choices = levels(as.factor(fare_data$company)), selected = "Taxi Affiliation Services")
-       #   )
-      #  ),
         fluidRow(
-          box(
-            width = 16,
-            title = "Fare Distributions",
-            color = "black", ribbon = FALSE, title_side = "top", collapsible = FALSE,
-           # plotOutput("fare_ridgeplot", height = 270)
+          div(style="display:inline-block;width:250px; margin-right: 20px; vertical-align:top",
+              selectInput("company1","First Company",
+                          choices = hypothesis_data$company)
+          ),
+          div(style="display:inline-block;width:250px; margin-right: 20px;vertical-align:top",
+              selectInput("company2","Second Company",
+                          choices = hypothesis_data$company)
+          ),
+          div(style="display:inline-block;width:250px; vertical-align:top",
+              selectInput("comp_metric","Compare",
+                          choices = c("distance","fare"))
           )
+        ),
+        fluidRow(
+          div(style="width: 350px",
+              valueBoxOutput("Z_value"))
         )
       ),
       tabItem(
@@ -248,6 +251,8 @@ ui <- dashboardPage(
         ),
         fluidRow(
           column(width = 6,
+           div(style="margin-bottom: 20px; width: 350px",
+               valueBoxOutput("trip_duration")),
             div(style="margin-bottom: 20px; width: 350px",
               valueBoxOutput("trip_fare")),
             div(style="margin-bottom: 20px; width: 350px",
