@@ -1,0 +1,72 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+```{r}
+library(plotly)
+library(shiny)
+library(shiny.semantic)
+library(semantic.dashboard)
+library(ggplot2)
+library(ggridges)
+library(dplyr)
+library(magrittr)
+library(plotly)
+library(viridis)
+library(RColorBrewer)
+library(leaflet)
+library(sp)
+library(data.table)
+library(rgeos)
+library(raster)
+library(rgdal)
+library(GISTools)
+library(xts)
+library(chron)
+```
+ 
+```{r}
+  ops_data <-  fread("G:/ASSR_Project/data/ops_data2.csv")
+  ops_data$company <- as.factor(ops_data$company)
+  ops_data$day <- as.factor(ops_data$day)
+  ops_data$weekday <- as.factor(ops_data$weekday)
+  ops_data$time_bin <- as.factor(ops_data$time_bin)
+  ops_data$month <- as.factor(ops_data$month)
+  ops_data$season <- as.factor(ops_data$season)
+  ops_data$holiday <- as.factor(ops_data$holiday)
+  
+  ops_data
+```
+```{r}
+  test <- ops_data %>% group_by(season,company) %>%
+  dplyr::summarize(fare=mean(fare))
+  test
+  
+  test2 <- ops_data %>% group_by(season) %>% dplyr::summarize(fare=mean(fare))
+  test2$company <- as.factor(c('All'))
+  test2 <- test2[,c(1,3,2)]
+  new <- bind_rows(test, test2)
+  new
+```
+
+```{r}
+ggplot(new, aes(x = season)) + geom_bar(aes(y = fare, fill = company), stat="identity", position = "dodge")
+```
+```{r}
+br <- filter(ops_data, company=='Blue Ribbon Taxi Association Inc.')
+# br <- filter(ops_data, company=='Medallion Leasin')
+br <- filter(ops_data, company=='Sun Taxi')
+brd <- br %>% group_by(month, date) %>% summarise(trips=mean(median_downtime))
+
+ggplot(brd, aes(x = month, y = trips)) + geom_boxplot()
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
