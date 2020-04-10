@@ -35,7 +35,7 @@ colnames(pa_units) = c('PA', 'Units')
 m <- merge(dgp,pa_units, by.x ='PLN_AREA_N', by.y = 'PA')
 
 pal <-
-  colorBin(palette = rev(brewer.pal(9,"RdYlGn")),
+  colorBin(palette = brewer.pal(10,"YlGnBu"),
            domain = c(0,2000),
            na.color = "#00000000",
            bins=c(0,5,10,50,100,200,400,600,800,1000,1200,1400,1600,1800,2000))
