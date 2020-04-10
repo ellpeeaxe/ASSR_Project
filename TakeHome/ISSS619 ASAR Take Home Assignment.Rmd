@@ -29,8 +29,11 @@ One day, your mum tells you that we just won the first prize of TOTO which worth
 # clean data
 
 # filter no. of units = 1 cos some transactions are the whole damn building
+data %<>% filter(No..of.Units==1)
+
 
 # recode yishun and Yishun
+data$Planning.Area <- recode(data$Planning.Area,"YISHUN"="Yishun")
 ```
 
 # Problem 1
