@@ -5,8 +5,8 @@ output: html_notebook
 
 ```{r}
 # Install required libraries
-packages <- c('plotly','ggridges','tidyverse','ggmosaic', 'treemapify', 'leaflet', 
-'data.table','BSDA', 'PASWR','Rmisc','magrittr')
+packages <- c('leaflet','dplyr','data.table','sp', 'rgeos', 'raster', 
+'rgdal','GISTools','magrittr','BSDA', 'PASWR')
 
 for(p in packages){
   if(!require(p,character.only = T)){
@@ -18,7 +18,7 @@ for(p in packages){
 
 ```{r}
 # Install required libraries
-data <- read.csv("data/realis2018.csv")
+data <- fread("data/realis2018.csv")
 head(data)
 ```
 
@@ -31,8 +31,7 @@ One day, your mum tells you that we just won the first prize of TOTO which worth
 # filter no. of units = 1 cos some transactions are the whole damn building
 data %<>% filter(No..of.Units==1)
 
-
-# recode yishun and Yishun
+# recode YISHUN and Yishun
 data$Planning.Area <- recode(data$Planning.Area,"YISHUN"="Yishun")
 ```
 
@@ -54,7 +53,7 @@ z.test(Newton$Unit.Price....psm, alternative = "greater", mu= 26500,sigma.x=sd(N
 ```
 
 ## Detailed Analysis
-At 95% Confidence level, we do not have sufficient evidence to say that the mean price per square meter(psm) of flats in the Newton Area is more than $26500.
+At 95% Confidence level, we have sufficient evidence to say that the mean price per square meter(psm) of flats in the Newton Area is more than $26500.
 
 
 # Problem 2
@@ -71,22 +70,73 @@ Your friend told you that Newton planning area may not be the best area to choos
 ## Code
 ### Distribution of Properties <= 2.5 Million across Planning Areas
 ```{r}
-# leaflet weiji
-# count of how many
+realis <- fread('data/realis2018.csv')
+realis$pa <- toupper(realis$`Planning Area`)
+centroids <- readOGR("data/MP14_PLNG_AREA_WEB_PL.shp")
+dgp <-  spTransform(centroids, CRS("+proj=longlat +ellps=GRS80"))
+one_unit <- subset(realis, realis$`No. of Units` == 1 & realis$`Transacted Price ($)` <= 2500000)
+pa_units <- aggregate(realis$`No. of Units`,
+                      by = list(realis$pa),
+                      FUN = sum)
+colnames(pa_units) = c('PA', 'Units')
+m <- merge(dgp,pa_units, by.x ='PLN_AREA_N', by.y = 'PA')
+
+pal <-
+  colorBin(palette = brewer.pal(10,"YlGnBu"),
+           domain = c(0,2000),
+           na.color = "#00000000",
+           bins=c(0,5,10,50,100,200,400,600,800,1000,1200,1400,1600,1800,2000))
+# create the base map, default will be openstreetmap if not selected 
+# added centroids point as well
+leaflet(dgp) %>% addTiles() %>% 
+                 addPolygons(fillColor = ~pal(m$Units),
+                             weight = 2,
+                             opacity = 1,
+                             color = "grey",
+                             dashArray = "1",
+                             fillOpacity = 0.8) %>% 
+                 addLegend("topright", pal, values=(0:2000), 
+                           title = "Transacted", 
+                           labFormat = labelFormat(suffix = " Units", between = '-')) 
+```
+
+```{r}
+pa_units[order(-pa_units$Units),]
 ```
 
 ### Available Flats by Planning Area
+#### Total Stock
 ```{r}
-# external dataset realis stock data
-# Leaflet
-# peixuan
+stock_data <- fread("data/stock2019Q4.csv")
+stock_data$PA <- toupper(stock_data$PA)
+stock <- merge(dgp,stock_data, by.x ='PLN_AREA_N', by.y = 'PA')
+
+pal <-
+  colorBin(palette = brewer.pal(10,"YlGnBu"),
+           domain = c(0,2000),
+           na.color = "#00000000",
+           bins=c(0,500,1000,3000,5000,8000,10000,15000,20000,30000))
+# create the base map, default will be openstreetmap if not selected 
+# added centroids point as well
+leaflet(dgp) %>% addTiles() %>% 
+                 addPolygons(fillColor = ~pal(stock$Total),
+                             weight = 2,
+                             opacity = 1,
+                             color = "grey",
+                             dashArray = "1",
+                             fillOpacity = 0.8) %>% 
+                 addLegend("topright", pal, values=(0:2000), 
+                           title = "Total Stock", 
+                           labFormat = labelFormat(suffix = " Units", between = '-')) 
+```
+
+```{r}
+stock_data[order(-stock_data$Total),]
 ```
 
 ### ANOVA and Tukey on PSM per Planning Area for each Flat Type
 ```{r}
-# output the damn tukey table and sort
-# jayne do anova
-# sean will write an algo to sort the damn thing
+
 ```
 
 ### ANOVA and Tukey on Transacted Price per Planning Area for each Flat Type
@@ -98,37 +148,8 @@ Your friend told you that Newton planning area may not be the best area to choos
 
 ### MRT Stations(Existing and Planned) by Planning Area
 ```{r}
-mrt <- read.csv("data/Planning_area_mrt_stations.csv")
-mrt$Planning.Area <- toupper(mrt$ï..Planning.Area)
-dgp <-  centroids <- readOGR("data/MP14_PLNG_AREA_WEB_PL.shp")
-dgp <-  spTransform(dgp, CRS("+proj=longlat +ellps=GRS80"))
-mrt2 <- merge(dgp,mrt, by.x ='PLN_AREA_N', by.y = 'Planning.Area')
-
-#All MRT Stations
-mrt_pal <- colorFactor(palette= brewer.pal(15, 'RdYlGn'),
-                        domain=c(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14),
-                        na.color = "#00000000")
-
- 
-leaflet(dgp) %>% addTiles() %>% addPolygons(fillColor = ~mrt_pal(mrt2$Total.no..of.stations),
-                                            weight = 2,
-                                            opacity = 1,
-                                            color = "grey",
-                                            dashArray = "1",
-                                            fillOpacity = 0.8) %>% addLegend("topright", mrt_pal, values=(0:14), title= "MRT Stations", labFormat = 
-                                                                               labelFormat(suffix = " stations"))
-
-#Only current MRT stations
-mrt_pal2 <- colorFactor(palette= brewer.pal(12, 'RdYlGn'),
-                        domain=c(0,1,2,3,4,5,6,7,8,9,10,11),
-                        na.color = "#00000000")
-leaflet(dgp) %>% addTiles() %>% addPolygons(fillColor = ~mrt_pal2(mrt2$No..of.operational.stations),
-                                            weight = 2,
-                                            opacity = 1,
-                                            color = "grey",
-                                            dashArray = "1",
-                                            fillOpacity = 0.8) %>% addLegend("topright", mrt_pal2, values=(0:11), title= "MRT Stations", labFormat = 
-                                                                               labelFormat(suffix = " stations"))
+# leaflet weiji
+# count of how many
 ```
 
 ## Detailed Analysis

@@ -1,42 +1,42 @@
-,Detached House,Semi-Detached House,Terrace House,Apartment,Condominium,Executive Condominium
-Ang Mo Kio,70,1213,3270,268,5028,297
-Bedok,1250,4056,7053,9110,20168,
-Bukit Batok,57,586,880,1598,9645,248
-Bukit Merah,21,30,76,1786,9900,
-Bukit Panjang,202,213,532,1409,5218,998
-Bishan,344,822,1931,1374,5339,384
-Bukit Timah,2790,4537,3008,3010,15559,
-Changi  ,9,61,,,,
-Choa Chu Kang,,44,533,1253,2403,4390
-Clementi,343,448,924,1074,8088,
-Downtown Core,,,,6823,649,
-Geylang,87,349,1605,11415,4219,
-Hougang,304,1358,4362,4991,7775,1421
-Jurong East,,,,424,2794,280
-Jurong West,4,129,956,612,4906,2212
-Kallang,37,43,543,6400,7857,
-Mandai,8,82,106,53,444,
-Marine Parade,765,838,1177,3752,6267,
-Museum,,,1,868,187,
-Newton,18,15,257,3620,3995,
-Novena,1049,770,769,9065,5521,
-Outram,,,2,871,265,
-Orchard,,,,1980,227,
-Punggol,124,,,992,2640,4305
-Paya Lebar,,,,9,,
-Pasir Ris,261,367,1261,263,13890,2209
-Queenstown,180,184,666,2396,5562,
-Rochor,2,,67,2758,1373,
-River Valley,45,174,89,4442,5449,
-Sembawang,84,485,556,226,1156,2404
-Sengkang,30,136,279,2952,4339,4927
-Serangoon,1118,3561,5837,3159,5476,
-Southern Islands,344,,50,,1766,
-Sungei Kadut,12,212,,,,
-Seletar,1,8,,,,
-Singapore River,,,,2995,1752,
-Tampines,50,494,692,53,8651,3112
-Tanglin,996,171,247,5320,8001,
-Toa Payoh,96,320,1354,3204,4869,
-Woodlands,106,,241,72,2350,3850
-Yishun,45,548,972,1523,4311,2419
+PA,Apartment,Condominium,Executive Condominium,Total
+Ang Mo Kio,268,5028,297,5593
+Bedok,9110,20168,,29278
+Bukit Batok,1598,9645,248,11491
+Bukit Merah,1786,9900,,11686
+Bukit Panjang,1409,5218,998,7625
+Bishan,1374,5339,384,7097
+Bukit Timah,3010,15559,,18569
+Changi  ,,,,0
+Choa Chu Kang,1253,2403,4390,8046
+Clementi,1074,8088,,9162
+Downtown Core,6823,649,,7472
+Geylang,11415,4219,,15634
+Hougang,4991,7775,1421,14187
+Jurong East,424,2794,280,3498
+Jurong West,612,4906,2212,7730
+Kallang,6400,7857,,14257
+Mandai,53,444,,497
+Marine Parade,3752,6267,,10019
+Museum,868,187,,1055
+Newton,3620,3995,,7615
+Novena,9065,5521,,14586
+Outram,871,265,,1136
+Orchard,1980,227,,2207
+Punggol,992,2640,4305,7937
+Paya Lebar,9,,,9
+Pasir Ris,263,13890,2209,16362
+Queenstown,2396,5562,,7958
+Rochor,2758,1373,,4131
+River Valley,4442,5449,,9891
+Sembawang,226,1156,2404,3786
+Sengkang,2952,4339,4927,12218
+Serangoon,3159,5476,,8635
+Southern Islands,,1766,,1766
+Sungei Kadut,,,,0
+Seletar,,,,0
+Singapore River,2995,1752,,4747
+Tampines,53,8651,3112,11816
+Tanglin,5320,8001,,13321
+Toa Payoh,3204,4869,,8073
+Woodlands,72,2350,3850,6272
+Yishun,1523,4311,2419,8253
