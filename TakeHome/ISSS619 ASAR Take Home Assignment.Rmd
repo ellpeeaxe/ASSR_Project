@@ -1,0 +1,103 @@
+---
+title: "Take-Home Group Assignment"
+output: html_notebook
+---
+
+```{r}
+# Install required libraries
+packages <- c('plotly','ggridges','tidyverse','ggmosaic', 'treemapify', 'leaflet', 
+'data.table','BSDA', 'PASWR','Rmisc','magrittr')
+
+for(p in packages){
+  if(!require(p,character.only = T)){
+    install.packages(p)
+  }
+  library(p,character.only = T)
+}
+```
+
+```{r}
+# Install required libraries
+data <- read.csv("data/realis2018.csv")
+head(data)
+```
+
+## Problem Description
+One day, your mum tells you that we just won the first prize of TOTO which worth 2,500,000 SGD. After you discuss with your family, you decide to buy a flat and plan for the investment. During the period of time, you contact the company "Property Master@" to discuss more on the historical transaction of Singapore property. The sample data givenis “realis2018.csv”. For problems stated below, we use α= 5%.
+
+```{r}
+# clean data
+
+# filter no. of units = 1 cos some transactions are the whole damn building
+
+# recode yishun and Yishun
+```
+
+# Problem 1
+You look around few different planning areas (Column R). When you ask the agent what is the mean Unit price(psm) for Newton flats (Column G), she claims that the mean is higher than 26500. Do you agree with your agent’s suggestion? Explain and justify your answer.
+
+## Assumptions:
+* Assume "Flat" means either Condominium, Executive Condominium or Apartment
+* Data is a sample of housing prices in 2018
+
+## Code
+```{r}
+Newton <-  data %>%  filter(Planning.Area=="Newton",Property.Type %in% c("Condominium", "Apartment", "Executive Condominium"), No..of.Units == "1")
+head(Newton)
+```
+
+```{r}
+z.test(Newton$Unit.Price....psm, alternative = "greater", mu= 26500,sigma.x=sd(Newton$Unit.Price....psm))
+```
+
+## Detailed Analysis
+At 95% Confidence level, we do not have sufficient evidence to say that the mean price per square meter(psm) of flats in the Newton Area is more than $26500.
+
+
+# Problem 2
+Your friend told you that Newton planning area may not be the best area to choose. He suggested you to consider other planning areas. This is a very difficult decision since you need to conduct a more comprehensive analysis and you also need to justify whether you still choose Newton or another planning area.
+
+## Assumptions:
+* Assume no preference for planning area
+* Assume purchasing in Q1 2020
+* The budget is 2.5 million
+* Assume "Flat" means either Condominium, Executive Condominium or Apartment
+* Key factors to consider: Accesibility, Estate Maturity
+* Metric for evaluation is PSM
+
+## Code
+### Distribution of Properties <= 2.5 Million across Planning Areas
+```{r}
+# leaflet weiji
+# count of how many
+```
+
+### Available Flats by Planning Area
+```{r}
+# external dataset realis stock data
+# Leaflet
+# peixuan
+```
+
+### ANOVA and Tukey on PSM per Planning Area for each Flat Type
+```{r}
+# output the damn tukey table and sort
+# jayne do anova
+# sean will write an algo to sort the damn thing
+```
+
+### ANOVA and Tukey on Transacted Price per Planning Area for each Flat Type
+```{r}
+# output the damn tukey table and sort
+# jayne do anova
+# sean will write an algo to sort the damn thing
+```
+
+### MRT Stations(Existing and Planned) by Planning Area
+```{r}
+# leaflet weiji
+# count of how many
+```
+
+## Detailed Analysis
+
