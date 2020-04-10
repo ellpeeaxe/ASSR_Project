@@ -98,8 +98,37 @@ Your friend told you that Newton planning area may not be the best area to choos
 
 ### MRT Stations(Existing and Planned) by Planning Area
 ```{r}
-# leaflet weiji
-# count of how many
+mrt <- read.csv("data/Planning_area_mrt_stations.csv")
+mrt$Planning.Area <- toupper(mrt$ï..Planning.Area)
+dgp <-  centroids <- readOGR("data/MP14_PLNG_AREA_WEB_PL.shp")
+dgp <-  spTransform(dgp, CRS("+proj=longlat +ellps=GRS80"))
+mrt2 <- merge(dgp,mrt, by.x ='PLN_AREA_N', by.y = 'Planning.Area')
+
+#All MRT Stations
+mrt_pal <- colorFactor(palette= brewer.pal(15, 'RdYlGn'),
+                        domain=c(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14),
+                        na.color = "#00000000")
+
+ 
+leaflet(dgp) %>% addTiles() %>% addPolygons(fillColor = ~mrt_pal(mrt2$Total.no..of.stations),
+                                            weight = 2,
+                                            opacity = 1,
+                                            color = "grey",
+                                            dashArray = "1",
+                                            fillOpacity = 0.8) %>% addLegend("topright", mrt_pal, values=(0:14), title= "MRT Stations", labFormat = 
+                                                                               labelFormat(suffix = " stations"))
+
+#Only current MRT stations
+mrt_pal2 <- colorFactor(palette= brewer.pal(12, 'RdYlGn'),
+                        domain=c(0,1,2,3,4,5,6,7,8,9,10,11),
+                        na.color = "#00000000")
+leaflet(dgp) %>% addTiles() %>% addPolygons(fillColor = ~mrt_pal2(mrt2$No..of.operational.stations),
+                                            weight = 2,
+                                            opacity = 1,
+                                            color = "grey",
+                                            dashArray = "1",
+                                            fillOpacity = 0.8) %>% addLegend("topright", mrt_pal2, values=(0:11), title= "MRT Stations", labFormat = 
+                                                                               labelFormat(suffix = " stations"))
 ```
 
 ## Detailed Analysis
