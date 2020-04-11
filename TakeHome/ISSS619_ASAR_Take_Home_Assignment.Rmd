@@ -1,0 +1,324 @@
+---
+title: "Take-Home Group Assignment"
+
+output: html_notebook
+---
+
+```{r}
+# Install required libraries
+packages <- c('leaflet','dplyr','data.table','sp', 'rgeos', 'raster', 
+'rgdal','GISTools','magrittr','BSDA', 'PASWR','broom','tidyverse','gtools')
+
+for(p in packages){
+  if(!require(p,character.only = T)){
+    install.packages(p)
+  }
+  library(p,character.only = T)
+}
+
+'%!in%' <- function(x,y)!('%in%'(x,y))
+```
+
+```{r}
+# Install required libraries
+data <- read.csv("data/realis2018.csv")
+```
+
+## Problem Description
+One day, your mum tells you that we just won the first prize of TOTO which worth 2,500,000 SGD. After you discuss with your family, you decide to buy a flat and plan for the investment. During the period of time, you contact the company "Property Master@" to discuss more on the historical transaction of Singapore property. The sample data givenis “realis2018.csv”. For problems stated below, we use α= 5%.
+
+```{r}
+# filter no. of units = 1 cos some transactions are the whole building
+data %<>% filter(No..of.Units==1)
+
+# recode YISHUN and Yishun
+data$Planning.Area <- recode(data$Planning.Area,"YISHUN"="Yishun")
+```
+
+# Problem 1
+You look around few different planning areas (Column R). When you ask the agent what is the mean Unit price(psm) for Newton flats (Column G), she claims that the mean is higher than 26500. Do you agree with your agent’s suggestion? Explain and justify your answer.
+
+## Assumptions:
+* Assume "Flat" means either Condominium, Executive Condominium or Apartment
+* Data is a sample of housing prices in 2018
+
+## Code
+```{r}
+Newton <-  data %>%  filter(Planning.Area=="Newton",Property.Type %in% c("Condominium", "Apartment", "Executive Condominium"), No..of.Units == "1")
+z.test(Newton$Unit.Price....psm, alternative = "greater", mu= 26500,sigma.x=sd(Newton$Unit.Price....psm))
+```
+
+## Detailed Analysis
+At 95% Confidence level, we have sufficient evidence to say that the mean price per square meter(psm) of flats in the Newton Area is more than $26500.
+
+
+# Problem 2
+Your friend told you that Newton planning area may not be the best area to choose. He suggested you to consider other planning areas. This is a very difficult decision since you need to conduct a more comprehensive analysis and you also need to justify whether you still choose Newton or another planning area.
+
+## Assumptions:
+* Assume no preference for planning area
+* Assume purchasing in Q1 2020
+* The budget is 2.5 million
+* Assume "Flat" means either Condominium, Executive Condominium or Apartment
+* Key factors to consider: Accesibility, Estate Maturity
+* Metric for evaluation is PSM
+
+## Code
+### Distribution of Properties <= 2.5 Million across Planning Areas
+```{r fig.height = 4, fig.width=8}
+realis <- fread('data/realis2018.csv')
+realis$pa <- toupper(realis$`Planning Area`)
+centroids <- readOGR('data/DGP Centroids.shp')
+centroids <-  spTransform(centroids, CRS("+proj=moll +ellps=WGS84"))
+dgp <- readOGR("data/MP14_PLNG_AREA_WEB_PL.shp")
+dgp <-  spTransform(dgp, CRS("+proj=longlat +ellps=GRS80"))
+one_unit <- subset(realis, realis$`No. of Units` == 1 & realis$`Transacted Price ($)` <= 2500000)
+pa_units <- aggregate(realis$`No. of Units`,
+                      by = list(realis$pa),
+                      FUN = sum)
+colnames(pa_units) = c('PA', 'Units')
+m <- merge(dgp,pa_units, by.x ='PLN_AREA_N', by.y = 'PA')
+
+pal <-
+  colorBin(palette = brewer.pal(10,"YlGnBu"),
+           domain = c(0,2000),
+           na.color = "#00000000",
+           bins=c(0,5,10,50,100,200,400,600,800,1000,1200,1400,1600,1800,2000))
+leaflet(dgp) %>% addTiles() %>% addPolygons(fillColor = ~pal(m$Units), weight = 2,
+                                            opacity = 1, color = "grey",
+                                            dashArray = "1", fillOpacity = 0.8) %>% 
+                                addLegend("topright", pal, values=(0:2000), title = "Transacted Units", labFormat = labelFormat(suffix = " Units", between = '-')) %>%       
+                                addLabelOnlyMarkers(data = centroids, lng = ~cen_x_dgp, lat = ~cen_y_dgp, label = ~DGP,
+                                                    labelOptions = labelOptions(noHide = TRUE, direction = 'center', textOnly = TRUE))
+```
+
+#### Units Per Planning Area
+```{r}
+pa_units[order(-pa_units$Units),]
+```
+
+### Available Flats by Planning Area
+#### Total Stock
+```{r fig.height = 4, fig.width=8}
+stock_data <- fread("data/stock2019Q4.csv")
+stock_data$PA <- toupper(stock_data$PA)
+stock <- merge(dgp,stock_data, by.x ='PLN_AREA_N', by.y = 'PA')
+pal <-
+  colorBin(palette = brewer.pal(10,"YlGnBu"),
+           domain = c(0,2000),
+           na.color = "#00000000",
+           bins=c(0,500,1000,3000,5000,8000,10000,15000,20000,30000))
+leaflet(dgp) %>% addTiles() %>% 
+                 addPolygons(fillColor = ~pal(stock$Total), weight = 2,
+                             opacity = 1, color = "grey",
+                             dashArray = "1", fillOpacity = 0.8) %>% 
+                 addLegend("topright", pal, values=(0:2000), 
+                           title = "Total Stock", 
+                           labFormat = labelFormat(suffix = " Units", between = '-')) %>%
+                 addLabelOnlyMarkers(data = centroids, lng = ~cen_x_dgp, lat = ~cen_y_dgp, label = ~DGP,
+                                     labelOptions = labelOptions(noHide = TRUE, direction = 'center', textOnly = TRUE))
+```
+
+#### Stock Per Planning Area
+```{r}
+stock_data[order(-stock_data$Total),]
+```
+
+### ANOVA and Tukey on PSM per Planning Area for each Flat Type
+```{r}
+PropType <- unique(data$Property.Type)
+for (k in 1:length(unique(data$Property.Type))){
+  data_property <-  data %>%  filter(Property.Type==unique(data$Property.Type)[k])
+    res.aov <- aov(Unit.Price....psm.~Planning.Area,data=data_property)
+    summary(res.aov)
+    results <-  tidy(TukeyHSD(res.aov,ordered=TRUE))
+    results_sorted <-  results %>% separate(comparison, c("Bigger", "Smaller"),sep = "-")
+    
+  
+    rankings1 <-  results_sorted %>%  group_by(Bigger) %>%  summarise(Count=n()) %>%  arrange(desc(Count))
+    rankings2 <- results_sorted %>% filter(Smaller %!in% rankings1$Bigger) %>%  group_by(Smaller) %>% summarise(Count=n())%>%  arrange(Count)
+    names(rankings2)[1] <- "Bigger"
+    rankings <- rbind(rankings1,rankings2)
+
+    rankings$Rank <-  seq.int(nrow(rankings)) 
+    rankings %<>% dplyr::select(-Count)
+    results_sorted <- left_join(results_sorted, rankings) %>%  arrange(Rank)
+
+ 
+    rankings$TukeyRank <- NA
+    rankings$TukeyRank[1] <- 1
+    for( i in 2:nrow(rankings)){
+      if(results_sorted$adj.p.value[results_sorted$Bigger==rankings$Bigger[i-1]&results_sorted$Smaller == rankings$Bigger[i]]<=0.05){
+        rankings$TukeyRank[i] <- rankings$TukeyRank[i-1]+1
+      } else if(sum((results_sorted$Smaller[results_sorted$Bigger==rankings$Bigger[i-1]&results_sorted$adj.p.value<=0.05] %in% results_sorted$Smaller[results_sorted$Bigger==rankings$Bigger[i]&results_sorted$adj.p.value>0.05])>0)){
+        rankings$TukeyRank[i] <- rankings$TukeyRank[i-1]+1
+       } else {
+         rankings$TukeyRank[i] <- rankings$TukeyRank[i-1]
+       }
+     }
+    
+    Tukey_ranked <-  rankings %>%  dplyr::select(Bigger,TukeyRank)
+    names(Tukey_ranked)[1] <-  "Planning.Area"
+    Planning_Mean <-  data_property %>% group_by(Planning.Area) %>%  summarise(mean= mean(Unit.Price....psm.), sd= sd(Unit.Price....psm.))
+    Tukey_ranked <- left_join(Tukey_ranked, Planning_Mean)
+    
+    assign(paste("aov_", PropType[k], sep = ""), tidy(res.aov))
+    assign(paste("Tukey_", PropType[k], sep = ""), as.data.frame(Tukey_ranked))
+}
+```
+```{r}
+summary(res.aov)
+```
+#### Apartments Mean PSM
+```{r}
+Tukey_Apartment
+```
+#### Condominium Mean PSM
+```{r}
+Tukey_Condominium
+```
+#### Executive Condominium Mean PSM
+```{r}
+`Tukey_Executive Condominium`
+```
+
+
+#### Detailed analysis 
+
+We performed the ANOVA test to determine if all the mean PSM per planning areas were similar. At 95% Confidence level, as P value is less than 0.05, we have sufficient evidence to say to reject H0 and that the mean price per square meter(psm) of flats are significantly different. To compare the group means, a post hoc test -  TUKEY test - was performed per property type. Given the extensive results output, the TUKEY results were sorted for clarity. For each property type, the differences were sorted, filtered for results with adjusted p-value <=0.05 and then ranked accordingly.
+
+**At 95% confidence intervals:**
+
+
+* For property type - Apartments - the Orchard area compared with the other planning areas, has the most significantly different differences between means. River Valley, Newton and Downtown core are ranked 2nd.
+* For property type - Condominium - the Orchard and River Vallye areas compared with the other planning areas, have the most significantly different differences between means. The Newton area comes in second
+* For property type - EC - the Bishan area compared with the other planning areas, has the most significantly different differences between means.Sengkang, Punggol areas come in second 
+
+
+### ANOVA and Tukey on Transacted Price per Planning Area for each Flat Type
+```{r}
+for (k in 1:length(unique(data$Property.Type))){
+  data_property <-  data %>%  filter(Property.Type==unique(data$Property.Type)[k])
+    res.aov <- aov(Transacted.Price....~Planning.Area,data=data_property)
+    summary(res.aov)
+    results <-  tidy(TukeyHSD(res.aov,ordered=TRUE))
+    results_sorted <-  results %>% separate(comparison, c("Bigger", "Smaller"),sep = "-")
+    
+  
+    rankings1 <-  results_sorted %>%  group_by(Bigger) %>%  summarise(Count=n()) %>%  arrange(desc(Count))
+    rankings2 <- results_sorted %>% filter(Smaller %!in% rankings1$Bigger) %>%  group_by(Smaller) %>% summarise(Count=n())%>%  arrange(Count)
+    names(rankings2)[1] <- "Bigger"
+    rankings <- rbind(rankings1,rankings2)
+
+    rankings$Rank <-  seq.int(nrow(rankings)) 
+    rankings %<>% dplyr::select(-Count)
+    results_sorted <- left_join(results_sorted, rankings) %>%  arrange(Rank)
+
+ 
+    rankings$TukeyRank <- NA
+    rankings$TukeyRank[1] <- 1
+    for( i in 2:nrow(rankings)){
+      if(results_sorted$adj.p.value[results_sorted$Bigger==rankings$Bigger[i-1]&results_sorted$Smaller == rankings$Bigger[i]]<=0.05){
+        rankings$TukeyRank[i] <- rankings$TukeyRank[i-1]+1
+      } else if(sum((results_sorted$Smaller[results_sorted$Bigger==rankings$Bigger[i-1]&results_sorted$adj.p.value<=0.05] %in% results_sorted$Smaller[results_sorted$Bigger==rankings$Bigger[i]&results_sorted$adj.p.value>0.05])>0)){
+        rankings$TukeyRank[i] <- rankings$TukeyRank[i-1]+1
+       } else {
+         rankings$TukeyRank[i] <- rankings$TukeyRank[i-1]
+       }
+     }
+    
+    Tukey_ranked <-  rankings %>%  dplyr::select(Bigger,TukeyRank)
+    names(Tukey_ranked)[1] <-  "Planning.Area"
+    Planning_Mean <-  data_property %>% group_by(Planning.Area) %>%  summarise(mean= mean(Transacted.Price....), sd= sd(Transacted.Price....))
+    Tukey_ranked <- left_join(Tukey_ranked, Planning_Mean)
+    
+    assign(paste("aov_", PropType[k], sep = ""), tidy(res.aov))
+    assign(paste("Tukey_", PropType[k], sep = ""), as.data.frame(Tukey_ranked))
+}
+```
+```{r}
+summary(res.aov)
+```
+#### Apartments Mean Transacted Price
+```{r}
+Tukey_Apartment
+```
+#### Condominium Mean Transacted Price
+```{r}
+Tukey_Condominium
+```
+#### Executive Condominium Mean Transacted Price
+```{r}
+`Tukey_Executive Condominium`
+```
+
+#### Detailed analysis 
+
+We performed the ANOVA test to determine if the mean transacted price per planning areas were similar. At 95% Confidence level, as P value is less than 0.05, we have sufficient evidence to say to reject H0 and that the mean transacted price of flats are significantly different. To compare the group means, a post hoc test - TUKEY test - was performed for each property type. Given the extensive results output, the TUKEY results were sorted for clarity. For each property type, the differences were sorted, filtered for results with adjusted p-value <=0.05 and then ranked accordingly.
+
+**At 95% confidence intervals:**
+
+
+* For property type - apartments - the Orchard area compared with the other planning areas, has the most significantly different differences between means. Newton and Downtown core are ranked 2nd.This is 
+* For property type - Condominium - the Newton and Tanglin areas compared with the other planning areas, have the most significantly different differences between means. Orchard and River Valley areas come in second
+* For property type - EC - the Bishan area compared with the other planning areas, has the most significantly different differences between means. Ang Mo Kio and Bukit Batok areas are ranked second and third respectively 
+
+
+### MRT Stations(Existing and Planned) by Planning Area
+```{r fig.height = 4, fig.width=8}
+mrt <- fread("data/Planning_area_mrt_stations.csv")
+mrt$`Planning Area` <- toupper(mrt$`Planning Area`)
+centroids <- readOGR('data/DGP Centroids.shp')
+centroids <-  spTransform(centroids, CRS("+proj=moll +ellps=WGS84"))
+dgp <- readOGR("data/MP14_PLNG_AREA_WEB_PL.shp")
+dgp <-  spTransform(dgp, CRS("+proj=longlat +ellps=GRS80"))
+mrt2 <- merge(dgp,mrt, by.x ='PLN_AREA_N', by.y = 'Planning Area')
+
+#All MRT Stations
+mrt_pal <- colorFactor(palette= brewer.pal(15, 'RdYlGn'),
+                        domain=c(0,1,2,3,5,6,7,8,9,10,12,14),
+                        na.color = "#00000000")
+
+ 
+leaflet(dgp) %>% addTiles() %>% addPolygons(fillColor = ~mrt_pal(mrt2$`Total no. of stations`), weight = 2,
+                                            opacity = 1, color = "grey",
+                                            dashArray = "1", fillOpacity = 0.8) %>% 
+                                            addLegend("topright", mrt_pal, values=(0:14), title= "MRT Stations", 
+                                                      labFormat = labelFormat(suffix = " stations")) %>%
+                                            addLabelOnlyMarkers(data = centroids, lng = ~cen_x_dgp, lat = ~cen_y_dgp, label = ~DGP,
+                                                                labelOptions = labelOptions(noHide = TRUE, direction = 'center', textOnly = TRUE))
+
+#Only current MRT stations
+mrt_pal2 <- colorFactor(palette= brewer.pal(12, 'RdYlGn'),
+                        domain=c(0,1,2,3,4,5,6,7,8,9,10,11),
+                        na.color = "#00000000")
+leaflet(dgp) %>% addTiles() %>% addPolygons(fillColor = ~mrt_pal2(mrt2$`No. of operational stations`), weight = 2,
+                                            opacity = 1, color = "grey",
+                                            dashArray = "1", fillOpacity = 0.8) %>% 
+                                            addLegend("topright", mrt_pal2, values=(0:11), title= "MRT Stations", 
+                                                      labFormat = labelFormat(suffix = " stations")) %>%
+                                            addLabelOnlyMarkers(data = centroids, lng = ~cen_x_dgp, lat = ~cen_y_dgp, label = ~DGP,
+                                                                labelOptions = labelOptions(noHide = TRUE, direction = 'center', textOnly = TRUE))
+```
+#### Number of Operational MRT Stations 
+```{r}
+mrt[order(-mrt$`No. of operational stations`),]
+```
+#### Total Number of MRT Stations (Operational + Planned)
+```{r}
+mrt[order(-mrt$`Total no. of stations`),]
+```
+
+## Detailed Analysis
+
+The optimal location to purchase will depend on what we want from the property. Assuming that we are looking to purchase an upscale Flat for investment purposes, the Newton area could be an option but the mean prices are high and mostly beyond our budget. There is also only 1 MRT station and limited supply of properties on sale. A better alternative would be the River Valley planning area as it has one of the highest number of available "Apartments" within our budget of $2.5 million. However, accessibility is lower than that of the other planning areas as there are currently only 1 MRT stations with 2 stations planned. Despite this, it should still be relatively accessible as it is very close to the CBD.
+
+If we are looking to buy a flat to live in, we will be more concerned about the accessibility as well as value for money. In this regard, we would prefer planning areas like Bedok or Toa Payoh as they are mature estate with relatively high levels of accessibility and amenities. Toa Payoh has an integrated transport hub while Bedok has many upcoming future MRT stations bringing the total to 11 stations. In addition the apartments in these areas are more affordable and we could even purchase 2 if we wanted to. 
+
+Alternatively, if we are simply looking for a larger space at the cheapest possible rates and save the rest of the money for other uses, the best option would be Jurong East or Jurong West as they have one of the lowest psm. In addition, it is also a mature estate with multiple malls and decent accessibility. There will be a total of 15 MRT stations in the area in the near future.
+
+
+
+
+
+
