@@ -186,6 +186,26 @@ head(`Tukey_Detached House`)
 head(`Tukey_Semi-Detached House`)
 head(`Tukey_Terrace House`)
 
+summary(res.aov)
+```
+```{r}
+#Detailed analysis 
+
+#We performed the ANOVA test to determine if all the mean PSM per planning areas were similar.
+#At 95% Confidence level, as P value is less than 0.05, we have sufficient evidence to say to reject H0 and that the mean price per square meter(psm) of flats are significantly different
+#To compare the group means, a post hoc test -  TUKEY test - was performed per property type 
+#Given the extensive results output, the TUKEY results were sorted for clarity. 
+#For each property type, the differences were sorted, filtered for results with adjusted p-value <=0.05 and then ranked accordingly 
+#At 95% confidence intervals:
+#   For property type - apartments - the Orchard area compared with the other planning areas, has the most significantly different differences between means. River Valley, Newton and Downtown core are ranked 2nd.
+#   For property type - Condominium - the Orchard and River Vallye areas compared with the other planning areas, have the most significantly different differences between means. The Newton area comes in second
+#   For property type - EC - the Bishan area compared with the other planning areas, has the most significantly different differences between means.Sengkang, Punggol areas come in second 
+#   For property type - Detached House - the Newton area compared with the other planning areas, has the most significantly different differences between means. Tanglin and Novena / Southern islands (Sentosa) are ranked second and third respectively
+#   For property type - Semi-Detached House - the River Valley area compared with the other planning areas, has the most significantly different differences between means. The Tanglin, Marine Parade areas are ranked second
+#   For property type - Terrance House - the Newton area compared with the other planning areas, has the most significantly different differences between means. Rochor, River Valley and Novea are joint second. 
+
+
+
 
 ```
 
@@ -241,6 +261,26 @@ head(`Tukey_Executive Condominium`)
 head(`Tukey_Detached House`)
 head(`Tukey_Semi-Detached House`)
 head(`Tukey_Terrace House`)
+summary(res.aov)
+
+```
+```{r}
+#Detailed analysis 
+
+#We performed the ANOVA test to determine if the mean transacted price per planning areas were similar.
+#At 95% Confidence level, as P value is less than 0.05, we have sufficient evidence to say to reject H0 and that the mean transacted price of flats are significantly different
+#To compare the group means, a post hoc test -  TUKEY test - was performed for each property type 
+#Given the extensive results output, the TUKEY results were sorted for clarity. 
+#For each property type, the differences were sorted, filtered for results with adjusted p-value <=0.05 and then ranked accordingly 
+#At 95% confidence intervals:
+#   For property type - apartments - the Orchard area compared with the other planning areas, has the most significantly different differences between means. Newton and Downtown core are ranked 2nd.This is 
+#   For property type - Condominium - the Newton and Tanglin areas compared with the other planning areas, have the most significantly different differences between means. Orchard and River Valley areas come in second
+#   For property type - EC - the Bishan area compared with the other planning areas, has the most significantly different differences between means. Ang Mo Kio and Bukit Batok areas are ranked second and third respectively 
+#   For property type - Detached House - the Newton area compared with the other planning areas, has the most significantly different differences between means. Tanglin and Southern islands (Sentosa) / Bukit Timah / Novena / Marine Parade are ranked second and third respectively
+#   For property type - Semi-Detached House - the Tanglin area compared with the other planning areas, has the most significantly different differences between means. The River Valley area are ranked second
+#   For property type - Terrance House - the Newton area compared with the other planning areas, has the most significantly different differences between means. Tanglin and Novena areas are joint second. 
+
+
 
 ```
 
