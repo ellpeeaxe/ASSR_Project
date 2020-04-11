@@ -6,7 +6,7 @@ output: html_notebook
 ```{r}
 # Install required libraries
 packages <- c('leaflet','dplyr','data.table','sp', 'rgeos', 'raster', 
-'rgdal','GISTools','magrittr','BSDA', 'PASWR','broom')
+'rgdal','GISTools','magrittr','BSDA', 'PASWR','broom','tidyverse','gtools')
 
 for(p in packages){
   if(!require(p,character.only = T)){
